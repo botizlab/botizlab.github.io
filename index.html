@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BotizLab — Apps y experiencias digitales</title>
+  <meta name="description" content="BotizLab: laboratorio de apps y experiencias digitales. Proyectos, productos y blog personal de Nicolas Botiz." />
+  <meta property="og:title" content="BotizLab" />
+  <meta property="og:description" content="Laboratorio de apps y experiencias digitales." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://botizlab.github.io/" />
+  <meta name="theme-color" content="#0a0c10" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="/"><span class="dot"></span> Botiz<b>Lab</b></a>
+      <button class="nav-toggle" aria-label="Menú" id="navToggle">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="#proyectos">Proyectos</a>
+        <a href="#blog">Blog</a>
+        <a href="#sobre-mi">Sobre mí</a>
+        <a href="#contacto">Contacto</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero container">
+    <span class="eyebrow">Laboratorio digital</span>
+    <h1>Construyo <span class="grad">apps</span><br />y experiencias digitales</h1>
+    <p class="lead">Soy Nicolas, y BotizLab es mi laboratorio: aquí viven mis aplicaciones, mis webs y lo que voy aprendiendo por el camino.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#proyectos">Ver proyectos →</a>
+      <a class="btn btn-ghost" href="#blog">Leer el blog</a>
+    </div>
+  </header>
+
+  <!-- Proyectos -->
+  <section class="section container" id="proyectos">
+    <div class="section-head reveal">
+      <span class="kicker">Proyectos</span>
+      <h2>Lo que estoy construyendo</h2>
+      <p>Apps y webs hechas con cariño. Algunas en producción, otras todavía cociéndose.</p>
+    </div>
+    <div class="grid">
+      <article class="card reveal">
+        <div class="icon">🏋️</div>
+        <span class="tag">App · React Native</span>
+        <h3>GymSpeak</h3>
+        <p>Registra tus entrenamientos hablando. IA que entiende tus series, progreso, rangos de fuerza, amigos y un entrenador personal.</p>
+        <div class="links">
+          <a href="https://botizlab.github.io/gymspeak-web/" target="_blank" rel="noopener">Ver web ↗</a>
+          <a href="https://play.google.com/store/apps/details?id=com.gymspeak.app" target="_blank" rel="noopener">Google Play ↗</a>
+        </div>
+      </article>
+
+      <article class="card soon reveal">
+        <div class="icon">✨</div>
+        <span class="tag">Próximamente</span>
+        <h3>Nuevo proyecto</h3>
+        <p>Algo nuevo está en el laboratorio. Vuelve pronto para verlo.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Blog -->
+  <section class="section container" id="blog">
+    <div class="section-head reveal">
+      <span class="kicker">Blog</span>
+      <h2>Notas del laboratorio</h2>
+      <p>Aprendizajes, decisiones de producto y el detrás de cámaras de mis proyectos.</p>
+    </div>
+    <div class="posts">
+      <a class="post-card reveal" href="blog/bienvenida.html">
+        <span class="date">27 jun 2026</span>
+        <h3>Bienvenido a BotizLab</h3>
+        <p>Por qué he creado este espacio y qué vas a encontrar aquí.</p>
+        <span class="more">Leer →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Sobre mí -->
+  <section class="section container" id="sobre-mi">
+    <div class="about">
+      <div class="bio reveal">
+        <div class="section-head" style="margin-bottom:18px">
+          <span class="kicker">Sobre mí</span>
+          <h2>Hola, soy Nicolas</h2>
+        </div>
+        <p>Desarrollo productos digitales de principio a fin: idea, diseño, código y lanzamiento. Me gusta convertir ideas sencillas en apps que la gente usa de verdad.</p>
+        <p>BotizLab es el paraguas de todo lo que creo. Si te interesa algún proyecto o quieres colaborar, escríbeme.</p>
+      </div>
+      <div class="stats reveal">
+        <div class="stat"><div class="n">1+</div><div class="l">apps publicadas</div></div>
+        <div class="stat"><div class="n">∞</div><div class="l">ideas en cola</div></div>
+        <div class="stat"><div class="n">100%</div><div class="l">hecho a mano</div></div>
+        <div class="stat"><div class="n">ES</div><div class="l">desde España</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section class="section container contact" id="contacto">
+    <div class="section-head reveal" style="text-align:center">
+      <span class="kicker">Contacto</span>
+      <h2 style="margin:8px 0">Hablemos</h2>
+      <p style="margin:10px auto 28px">¿Una idea, una colaboración o solo saludar? Aquí me encuentras.</p>
+    </div>
+    <div class="reveal">
+      <a class="btn btn-primary" href="mailto:mrjokyjok@gmail.com">Escríbeme</a>
+      <a class="btn btn-ghost" href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> BotizLab</span>
+      <div style="display:flex; gap:20px">
+        <a href="#proyectos">Proyectos</a>
+        <a href="#blog">Blog</a>
+        <a href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

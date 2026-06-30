@@ -1,118 +1,137 @@
 /* ============================================================
-   BotizLab — Compañía de producto
-   Estilo claro, editorial y sobrio. Sin gradientes, sin iconos
-   de relleno. Tipografía serif para titulares.
+   BotizLab — Showcase de apps · tema oscuro
+   Poco texto, botones con carácter, preview real de la app.
    ============================================================ */
 
 :root {
-  --bg: #fbfaf8;
-  --ink: #17181c;
-  --muted: #6b6f77;
-  --faint: #9a9ea6;
-  --line: #e6e3dd;
-  --line-strong: #d8d4cc;
-  --serif: Georgia, "Times New Roman", Cambria, serif;
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --maxw: 860px;
+  --bg: #09090b;
+  --surface: #141417;
+  --surface-2: #1b1b1f;
+  --border: #26262c;
+  --text: #f4f4f6;
+  --muted: #9a9aa3;
+  --faint: #6a6a73;
+  --accent: #5ad67d;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --maxw: 1040px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: var(--sans);
+  font-family: var(--font);
   background: var(--bg);
-  color: var(--ink);
-  line-height: 1.65;
+  color: var(--text);
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  font-size: 17px;
+  overflow-x: hidden;
+}
+/* halo muy sutil, sin gradiente cantoso */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(700px 420px at 70% -10%, rgba(90, 214, 125, 0.06), transparent 70%);
 }
 
 a { color: inherit; text-decoration: none; }
-.container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
-
-h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.01em; line-height: 1.12; }
+.container { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 26px; }
 
 /* ─── Navbar ─────────────────────────────────────────────── */
-.nav { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 40; }
-.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 70px; }
-.brand { font-family: var(--serif); font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
-.nav-links { display: flex; gap: 30px; align-items: center; }
-.nav-links a { color: var(--muted); font-size: 15px; transition: color .15s; }
-.nav-links a:hover { color: var(--ink); }
-.nav-toggle { display: none; background: none; border: 0; color: var(--ink); font-size: 22px; cursor: pointer; }
+.nav { position: sticky; top: 0; z-index: 40; background: rgba(9,9,11,.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; height: 66px; }
+.brand { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
+.brand i { color: var(--accent); font-style: normal; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { color: var(--muted); font-size: 14px; font-weight: 600; transition: color .15s; }
+.nav-links a:hover { color: var(--text); }
+.nav-toggle { display: none; background: none; border: 0; color: var(--text); font-size: 22px; cursor: pointer; }
 
-/* ─── Botones / enlaces ──────────────────────────────────── */
+/* ─── Botones (con carácter) ─────────────────────────────── */
 .btn {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 22px; font-size: 15px; font-weight: 600; border-radius: 2px;
-  border: 1px solid var(--ink); transition: background .15s, color .15s; cursor: pointer;
+  padding: 13px 24px; border-radius: 12px; font-size: 15px; font-weight: 700;
+  border: 1px solid transparent; cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, color .18s ease, background .18s ease;
 }
-.btn-solid { background: var(--ink); color: var(--bg); }
-.btn-solid:hover { background: transparent; color: var(--ink); }
-.btn-line { background: transparent; color: var(--ink); }
-.btn-line:hover { background: var(--ink); color: var(--bg); }
-.link-arrow { font-weight: 600; border-bottom: 1px solid var(--line-strong); padding-bottom: 1px; transition: border-color .15s; }
-.link-arrow:hover { border-color: var(--ink); }
-
-/* ─── Hero ───────────────────────────────────────────────── */
-.hero { padding: 110px 0 90px; border-bottom: 1px solid var(--line); }
-.hero .label { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); }
-.hero h1 { font-size: clamp(38px, 7vw, 60px); margin-top: 22px; max-width: 16ch; }
-.hero p { color: var(--muted); font-size: 19px; max-width: 52ch; margin-top: 24px; }
-.hero-cta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 38px; }
-
-/* ─── Secciones ──────────────────────────────────────────── */
-.section { padding: 80px 0; border-bottom: 1px solid var(--line); }
-.section-label { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-bottom: 26px; }
-.section h2 { font-size: clamp(26px, 4vw, 34px); margin-bottom: 18px; }
-.section .intro { color: var(--muted); max-width: 56ch; font-size: 18px; }
-
-/* ─── Productos ──────────────────────────────────────────── */
-.product {
-  display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: baseline;
-  padding: 28px 0; border-top: 1px solid var(--line);
+.btn-primary { background: var(--text); color: #0a0a0b; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,.16); }
+/* destello que cruza el botón al pasar el ratón */
+.btn-primary::after {
+  content: ""; position: absolute; top: 0; left: -130%; width: 55%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,.55), transparent);
+  transform: skewX(-20deg); transition: left .55s ease;
 }
-.product:first-of-type { border-top: 0; }
-.product .pname { font-family: var(--serif); font-size: 26px; font-weight: 600; }
-.product .pdesc { color: var(--muted); margin-top: 6px; max-width: 46ch; }
-.product .plinks { margin-top: 14px; display: flex; gap: 22px; flex-wrap: wrap; }
-.product .plinks a { font-size: 15px; }
-.product .pmeta { color: var(--faint); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
-.product.soon .pname, .product.soon .pmeta { color: var(--faint); }
+.btn-primary:hover::after { left: 150%; }
+.btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,.4); }
 
-/* ─── Compañía / sobre ───────────────────────────────────── */
-.prose p { color: var(--muted); font-size: 18px; margin-top: 16px; }
-.prose p:first-child { margin-top: 0; }
-.prose strong { color: var(--ink); font-weight: 600; }
-.founder { margin-top: 28px; font-size: 15px; color: var(--ink); }
-.founder span { color: var(--faint); }
+/* ─── Hero (minimal) ─────────────────────────────────────── */
+.hero { padding: 120px 0 90px; text-align: center; }
+.hero .tagline { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 22px; }
+.hero h1 { font-size: clamp(52px, 12vw, 110px); font-weight: 850; letter-spacing: -3px; line-height: .95; }
+.hero p { color: var(--muted); font-size: 19px; margin-top: 22px; }
+.hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 38px; }
 
-/* ─── Contacto ───────────────────────────────────────────── */
-.contact h2 { font-size: clamp(28px, 5vw, 40px); }
-.contact .email { display: inline-block; font-family: var(--serif); font-size: clamp(22px, 4vw, 30px); margin-top: 14px; border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; }
-.contact .email:hover { border-color: var(--ink); }
-.social-row { display: flex; gap: 26px; flex-wrap: wrap; margin-top: 30px; }
-.social-row a { color: var(--muted); font-size: 15px; border-bottom: 1px solid transparent; padding-bottom: 1px; transition: color .15s, border-color .15s; }
-.social-row a:hover { color: var(--ink); border-color: var(--ink); }
+/* ─── Apps ───────────────────────────────────────────────── */
+.section { padding: 70px 0; }
+.section-title { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--faint); margin-bottom: 34px; }
+
+.app {
+  display: grid; grid-template-columns: 300px 1fr; gap: 56px; align-items: center;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 26px; padding: 44px;
+}
+.app-phone { justify-self: center; }
+.phone {
+  width: 250px; border-radius: 40px; border: 9px solid #18181c; background: #000;
+  overflow: hidden; position: relative; box-shadow: 0 40px 90px rgba(0,0,0,.6);
+  transition: transform .3s ease;
+}
+.phone::before { content: ""; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 70px; height: 6px; background: #000; border-radius: 6px; z-index: 2; }
+.phone img { display: block; width: 100%; }
+.app:hover .phone { transform: translateY(-6px) rotate(-1deg); }
+
+.app-info .app-head { display: flex; align-items: center; gap: 14px; }
+.app-info .app-icon { width: 56px; height: 56px; border-radius: 14px; border: 1px solid var(--border); }
+.app-info h2 { font-size: 32px; font-weight: 850; letter-spacing: -1px; }
+.app-info .desc { color: var(--muted); font-size: 17px; margin-top: 16px; max-width: 44ch; }
+.app-info .meta { display: inline-block; margin-top: 14px; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; }
+.app-info .app-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+
+.soon { margin-top: 20px; border: 1px dashed var(--border); border-radius: 18px; padding: 22px 26px; color: var(--faint); font-weight: 600; text-align: center; }
+
+/* ─── Contacto + redes ───────────────────────────────────── */
+.contact { text-align: center; }
+.contact h2 { font-size: clamp(30px, 6vw, 52px); font-weight: 850; letter-spacing: -2px; }
+.contact .email-btn { margin-top: 26px; }
+.socials { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+.chip {
+  display: inline-flex; align-items: center; padding: 11px 20px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+  font-size: 14px; font-weight: 600; transition: transform .15s, color .15s, border-color .15s;
+}
+.chip:hover { transform: translateY(-2px); color: var(--text); border-color: var(--accent); }
 
 /* ─── Footer ─────────────────────────────────────────────── */
-footer { padding: 34px 0; }
-.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; color: var(--faint); font-size: 14px; }
+footer { border-top: 1px solid var(--border); padding: 30px 0; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--faint); font-size: 14px; }
+.footer-inner b { color: var(--muted); font-weight: 600; }
 
-/* ─── Reveal sutil ───────────────────────────────────────── */
-.reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+/* ─── Reveal ─────────────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
 .reveal.in { opacity: 1; transform: none; }
 
 /* ─── Responsive ─────────────────────────────────────────── */
-@media (max-width: 680px) {
-  .product { grid-template-columns: 1fr; }
-  .product .pmeta { order: -1; }
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; gap: 36px; padding: 32px; text-align: center; }
+  .app-info .app-head { justify-content: center; }
+  .app-info .desc { margin-left: auto; margin-right: auto; }
+  .app-info .app-cta { justify-content: center; }
   .nav-links {
-    position: absolute; top: 70px; left: 0; right: 0; flex-direction: column; gap: 0;
-    background: var(--bg); border-bottom: 1px solid var(--line);
+    position: absolute; top: 66px; left: 0; right: 0; flex-direction: column; gap: 0;
+    background: var(--bg); border-bottom: 1px solid var(--border);
     max-height: 0; overflow: hidden; transition: max-height .3s ease;
   }
-  .nav-links.open { max-height: 320px; }
-  .nav-links a { padding: 16px 28px; width: 100%; border-top: 1px solid var(--line); }
+  .nav-links.open { max-height: 240px; }
+  .nav-links a { padding: 16px 26px; width: 100%; border-top: 1px solid var(--border); }
   .nav-toggle { display: block; }
 }

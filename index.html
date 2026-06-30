@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BotizLab — Compañía de productos digitales</title>
-  <meta name="description" content="BotizLab, compañía de productos digitales fundada por Carlos Botiz. Creamos software propio y lo llevamos al mercado." />
+  <title>BotizLab — Mis aplicaciones</title>
+  <meta name="description" content="BotizLab — las aplicaciones de Carlos Botiz, en un solo sitio." />
   <meta property="og:title" content="BotizLab" />
-  <meta property="og:description" content="Compañía de productos digitales. Fundada por Carlos Botiz." />
+  <meta property="og:description" content="Mis aplicaciones, en un solo sitio." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://botizlab.github.io/" />
-  <meta name="theme-color" content="#fbfaf8" />
+  <meta name="theme-color" content="#09090b" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -18,11 +18,10 @@
   <!-- Navbar -->
   <nav class="nav">
     <div class="container nav-inner">
-      <a class="brand" href="/">BotizLab</a>
+      <a class="brand" href="/">Botiz<i>Lab</i></a>
       <button class="nav-toggle" aria-label="Abrir menú" id="navToggle">≡</button>
       <div class="nav-links" id="navLinks">
-        <a href="#productos">Productos</a>
-        <a href="#compania">Compañía</a>
+        <a href="#apps">Apps</a>
         <a href="#contacto">Contacto</a>
       </div>
     </div>
@@ -31,69 +30,56 @@
   <!-- Hero -->
   <header class="hero">
     <div class="container reveal">
-      <div class="label">BotizLab</div>
-      <h1>Una compañía de productos digitales.</h1>
-      <p>Fundada por Carlos Botiz. Creamos software propio y lo llevamos al mercado. Empezamos con GymSpeak, y vamos a por más.</p>
+      <span class="tagline">Carlos Botiz</span>
+      <h1>BotizLab</h1>
+      <p>Mis aplicaciones, en un solo sitio.</p>
       <div class="hero-cta">
-        <a class="btn btn-solid" href="#productos">Ver productos</a>
-        <a class="btn btn-line" href="#contacto">Contacto</a>
+        <a class="btn btn-primary" href="#apps">Ver apps</a>
+        <a class="btn btn-ghost" href="#contacto">Contacto</a>
       </div>
     </div>
   </header>
 
-  <!-- Productos -->
-  <section class="section" id="productos">
+  <!-- Apps -->
+  <section class="section" id="apps">
     <div class="container">
-      <div class="section-label reveal">Productos</div>
+      <div class="section-title reveal">Aplicaciones</div>
 
-      <div class="product reveal">
-        <div>
-          <div class="pname">GymSpeak</div>
-          <div class="pdesc">Registra tus entrenamientos hablando. Inteligencia artificial que entiende tus series, mide tu progreso y te guía como un entrenador.</div>
-          <div class="plinks">
-            <a class="link-arrow" href="https://botizlab.github.io/gymspeak-web/" target="_blank" rel="noopener">Web</a>
-            <a class="link-arrow" href="https://play.google.com/store/apps/details?id=com.gymspeak.app" target="_blank" rel="noopener">Google Play</a>
+      <div class="app reveal">
+        <div class="app-phone">
+          <div class="phone"><img src="assets/gymspeak-cap.jpeg" alt="GymSpeak" loading="lazy" /></div>
+        </div>
+        <div class="app-info">
+          <div class="app-head">
+            <img class="app-icon" src="assets/gymspeak-icon.png" alt="" />
+            <h2>GymSpeak</h2>
+          </div>
+          <p class="desc">Registra tus entrenamientos hablando. IA que entiende tus series, mide tu progreso y te guía.</p>
+          <div><span class="meta">App móvil</span></div>
+          <div class="app-cta">
+            <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app" target="_blank" rel="noopener">Google Play</a>
+            <a class="btn btn-ghost" href="https://botizlab.github.io/gymspeak-web/" target="_blank" rel="noopener">Web</a>
           </div>
         </div>
-        <div class="pmeta">App móvil</div>
       </div>
 
-      <div class="product soon reveal">
-        <div>
-          <div class="pname">Próximos productos</div>
-          <div class="pdesc">Nuevas ideas en desarrollo dentro del laboratorio.</div>
-        </div>
-        <div class="pmeta">En camino</div>
-      </div>
+      <div class="soon reveal">Más apps en camino</div>
     </div>
   </section>
 
-  <!-- Compañía -->
-  <section class="section" id="compania">
-    <div class="container">
-      <div class="section-label reveal">Compañía</div>
-      <div class="reveal">
-        <h2>Construir algo que perdure.</h2>
-        <div class="prose">
-          <p>BotizLab es un proyecto a largo plazo: crear una familia de <strong>productos digitales propios</strong>, cada uno cuidado al detalle.</p>
-          <p>El objetivo no es hacer encargos para terceros, sino construir <strong>compañía</strong>: productos que crezcan y, con ellos, un equipo.</p>
-        </div>
-        <div class="founder">Fundador <span>—</span> Carlos Botiz</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contacto -->
+  <!-- Contacto + redes -->
   <section class="section contact" id="contacto">
     <div class="container reveal">
-      <div class="section-label">Contacto</div>
-      <h2>Hablemos.</h2>
-      <a class="email" href="mailto:gymspeaksl@gmail.com">gymspeaksl@gmail.com</a>
-      <div class="social-row">
-        <a href="https://www.linkedin.com/in/nicolas-carlos-botiz-77587438b/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="https://www.instagram.com/ncarlossb__/" target="_blank" rel="noopener">Instagram</a>
-        <a href="https://www.tiktok.com/@carlosbotissss" target="_blank" rel="noopener">TikTok</a>
-        <a href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub</a>
+      <div class="section-title">Contacto</div>
+      <h2>Hablemos</h2>
+      <div class="email-btn">
+        <a class="btn btn-primary" href="mailto:gymspeaksl@gmail.com">gymspeaksl@gmail.com</a>
+      </div>
+      <div class="socials">
+        <a class="chip" href="https://www.linkedin.com/in/nicolas-carlos-botiz-77587438b/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="chip" href="https://www.instagram.com/ncarlossb__/" target="_blank" rel="noopener">Instagram</a>
+        <a class="chip" href="https://www.tiktok.com/@carlosbotissss" target="_blank" rel="noopener">TikTok</a>
+        <a class="chip" href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
   </section>
@@ -102,7 +88,7 @@
   <footer>
     <div class="container footer-inner">
       <span>© <span id="year"></span> BotizLab</span>
-      <span>Carlos Botiz</span>
+      <b>Carlos Botiz</b>
     </div>
   </footer>
 

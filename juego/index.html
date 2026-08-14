@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymSpeak Runner — Juega moviendo el cuerpo</title>
+    <meta name="description" content="Un juego que se controla con tu cuerpo: salta, agáchate y esquiva delante de la cámara. Todo pasa en tu navegador, el vídeo no sale de tu dispositivo.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="GymSpeak Runner — Juega moviendo el cuerpo">
+    <meta property="og:description" content="Salta, agáchate y esquiva de verdad. Sin instalar nada y sin subir tu vídeo a ningún sitio.">
+    <meta property="og:url" content="https://botizlab.github.io/juego/">
+    <meta property="og:image" content="https://botizlab.github.io/gymspeak-web/assets/images/banner.png">
+    <link rel="canonical" href="https://botizlab.github.io/juego/">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script>document.documentElement.classList.add("js");</script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/juego.css">
+</head>
+<body class="game-body">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="logo-link">
+                <img src="assets/logo.png" alt="Logo de GymSpeak" class="logo-img">
+                <span class="logo-text">GymSpeak Runner</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#obstaculos">Obstáculos</a></li>
+                <li><a href="#movimientos">Movimientos</a></li>
+                <li><a href="https://botizlab.github.io/gymspeak-web/">La app</a></li>
+                <li><a href="/" class="btn-outline">Carlos Botiz</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="game-main container">
+        <div class="game-intro">
+            <div class="badge">Prototipo · Funciona en tu navegador</div>
+            <h1 class="game-title">Juega <span class="highlight">moviendo el cuerpo</span>.</h1>
+            <p class="game-sub">Salta y el muñeco salta. Te agachas y se agacha. Te inclinas a un lado y cambia de carril. Gana quien <strong>aguante más tiempo</strong>: la cinta no para de acelerar. La cámara te lee en el propio navegador y <strong>el vídeo no se sube a ningún sitio ni se guarda</strong>.</p>
+        </div>
+
+        <!-- Escenario del juego -->
+        <div class="stage" id="stage">
+            <canvas id="gameCanvas" width="900" height="560" aria-label="Juego de carriles controlado por movimiento"></canvas>
+
+            <!-- Vista de la cámara con el esqueleto encima -->
+            <div class="cam-box" id="camBox" hidden>
+                <video id="cam" playsinline muted autoplay></video>
+                <canvas id="camOverlay" width="240" height="180"></canvas>
+                <span class="cam-tag" id="camTag">Leyendo</span>
+            </div>
+
+            <!-- Marcador -->
+            <div class="hud" id="hud" hidden>
+                <div class="hud-item"><span class="hud-label">Tiempo</span><strong id="score">0:00</strong></div>
+                <div class="hud-item"><span class="hud-label">Perfectos</span><strong id="perfectos">0</strong></div>
+                <div class="hud-item hud-lives"><span class="hud-label">Vidas</span><strong id="lives">♥♥♥</strong></div>
+                <button class="hud-btn" id="btnPause" type="button" aria-label="Pausa">❚❚</button>
+            </div>
+
+            <!-- Récord y sonido, siempre visibles -->
+            <div class="topbar">
+                <span class="record-chip">Récord <strong id="record">—</strong></span>
+                <button class="hud-btn" id="btnPantalla" type="button" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+                <button class="hud-btn" id="btnCalidad" type="button" aria-label="Calidad gráfica" title="Gráficos: altos">✦</button>
+                <button class="hud-btn" id="btnSound" type="button" aria-label="Silenciar">🔊</button>
+            </div>
+
+            <!-- El rival, mientras dura el duelo -->
+            <div class="rival" id="rival" hidden>
+                <span class="rival-label">Rival</span>
+                <strong id="rivalTiempo">0:00</strong>
+                <span class="rival-estado" id="rivalEstado">corriendo</span>
+            </div>
+
+            <!-- Aviso del gesto detectado -->
+            <div class="gesture-flash" id="gestureFlash" hidden></div>
+
+            <!-- Capas de estado -->
+            <div class="overlay" id="overlay">
+                <div class="panel" id="panelStart">
+                    <h2>Elige cómo quieres jugar</h2>
+                    <p class="panel-note" id="startNote">Con la cámara necesitas ponerte a metro y medio y tener sitio para saltar. Si estás sentado o no te apetece, juega con el teclado.</p>
+                    <div class="panel-actions">
+                        <button class="btn-primary" id="btnCam" type="button">Jugar con la cámara</button>
+                        <button class="btn-secondary" id="btnKeys" type="button">Jugar con teclado</button>
+                        <button class="btn-secondary" id="btnDuelo" type="button">Uno contra uno</button>
+                    </div>
+                    <p class="panel-legal">Al darle a «Jugar con la cámara» el navegador te pedirá permiso. El análisis ocurre entero en tu dispositivo.</p>
+                </div>
+
+                <div class="panel" id="panelLoading" hidden>
+                    <div class="spinner" aria-hidden="true"></div>
+                    <h2 id="loadingTitle">Cargando el detector…</h2>
+                    <p class="panel-note" id="loadingNote">Son unos megas la primera vez. Después queda en caché.</p>
+                </div>
+
+                <div class="panel panel-ancho" id="panelPreview" hidden>
+                    <h2>Colócate</h2>
+                    <p class="preview-aviso" id="previewAviso">Buscándote…</p>
+                    <p class="panel-note">De pie, a metro y medio o dos, que se te vea de las rodillas para arriba. Necesitas sitio para saltar y para dar medio paso a cada lado.</p>
+                    <div class="panel-actions">
+                        <button class="btn-primary" id="btnListo" type="button" disabled>Estoy listo</button>
+                        <button class="btn-secondary" id="btnPreviewSalir" type="button">Volver</button>
+                    </div>
+                </div>
+
+                <div class="panel" id="panelCalib" hidden>
+                    <h2>Colócate y no te muevas</h2>
+                    <p class="panel-note">De pie, a metro y medio o dos de la cámara, que se te vea de las rodillas para arriba.</p>
+                    <div class="calib-ring">
+                        <svg viewBox="0 0 120 120" aria-hidden="true">
+                            <circle class="calib-bg" cx="60" cy="60" r="52"></circle>
+                            <circle class="calib-fg" id="calibFg" cx="60" cy="60" r="52"></circle>
+                        </svg>
+                        <span id="calibCount">3</span>
+                    </div>
+                    <p class="calib-state" id="calibState">Buscándote…</p>
+                </div>
+
+                <div class="panel" id="panelError" hidden>
+                    <h2 id="errorTitle">No se pudo abrir la cámara</h2>
+                    <p class="panel-note" id="errorNote"></p>
+                    <div class="panel-actions">
+                        <button class="btn-secondary" id="btnErrorKeys" type="button">Jugar con teclado</button>
+                    </div>
+                </div>
+
+                <div class="panel" id="panelLogin" hidden>
+                    <h2>Entra con tu cuenta</h2>
+                    <p class="panel-note">La misma que usas en la app. Hace falta para saber contra quién juegas y guardar el resultado.</p>
+                    <form class="login-form" id="formLogin">
+                        <input type="email" id="loginEmail" placeholder="Tu correo" autocomplete="email" required>
+                        <input type="password" id="loginPass" placeholder="Tu contraseña" autocomplete="current-password" required>
+                        <p class="login-error" id="loginError" hidden></p>
+                        <div class="panel-actions">
+                            <button class="btn-primary" id="btnEntrar" type="submit">Entrar</button>
+                            <button class="btn-secondary" id="btnLoginVolver" type="button">Volver</button>
+                        </div>
+                    </form>
+                    <p class="panel-legal">¿No tienes cuenta? Se crea desde la app de GymSpeak.</p>
+                </div>
+
+                <div class="panel" id="panelCola" hidden>
+                    <div class="spinner" aria-hidden="true"></div>
+                    <h2 id="colaTitulo">Buscando rival…</h2>
+                    <p class="panel-note" id="colaNota">En cuanto entre alguien más, empezáis los dos a la vez y con la misma pista.</p>
+                    <div class="panel-actions">
+                        <button class="btn-secondary" id="btnCancelarCola" type="button">Cancelar</button>
+                    </div>
+                </div>
+
+                <div class="panel" id="panelDuelo" hidden>
+                    <h2 id="dueloTitulo">Se acabó</h2>
+                    <p class="panel-score" id="dueloMarcador"></p>
+                    <p class="panel-note" id="dueloNota"></p>
+                    <div class="panel-actions">
+                        <button class="btn-primary" id="btnOtroDuelo" type="button">Otro duelo</button>
+                        <button class="btn-secondary" id="btnDueloSalir" type="button">Volver</button>
+                    </div>
+                </div>
+
+                <div class="panel" id="panelPause" hidden>
+                    <h2>En pausa</h2>
+                    <p class="panel-note">Tómate el descanso, que para eso entrenas.</p>
+                    <div class="panel-actions">
+                        <button class="btn-primary" id="btnResume" type="button">Seguir</button>
+                        <button class="btn-secondary" id="btnQuit" type="button">Dejarlo</button>
+                    </div>
+                </div>
+
+                <div class="panel" id="panelOver" hidden>
+                    <h2 id="finalTitle">Se acabó</h2>
+                    <p class="panel-score">Has aguantado <strong id="finalScore">0:00</strong><br><span id="finalLine"></span></p>
+
+                    <div class="stats">
+                        <div class="stat"><span class="stat-label">Tiempo</span><strong id="statTiempo">0:00</strong></div>
+                        <div class="stat"><span class="stat-label">Distancia</span><strong id="statDistancia">0 m</strong></div>
+                        <div class="stat"><span class="stat-label">Ritmo medio</span><strong id="statRitmo">0 km/h</strong></div>
+                        <div class="stat"><span class="stat-label">Calorías</span><strong id="statKcal">0 kcal</strong></div>
+                    </div>
+                    <p class="stats-note">Estimación de lo que quemarías en una cinta a ese ritmo, calculada para 70 kg. No mide lo que has quemado tú.</p>
+                    <div class="panel-actions">
+                        <button class="btn-primary" id="btnAgain" type="button">Otra vez</button>
+                        <a class="btn-secondary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app">Descargar GymSpeak</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Qué hay en la pista -->
+        <section class="controls" id="obstaculos">
+            <h2 class="controls-title">Qué te vas a encontrar</h2>
+            <div class="controls-grid">
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">▬</span>
+                    <h3>Barra en el suelo</h3>
+                    <p>Tirada con sus discos. Se salta.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">⊓</span>
+                    <h3>Pórtico de dominadas</h3>
+                    <p>La barra está arriba. Te agachas y pasas por debajo.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">▮</span>
+                    <h3>Banco de press</h3>
+                    <p>Con su soporte. Ocupa el carril de lado a lado: solo se esquiva.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">◍</span>
+                    <h3>Saco de boxeo</h3>
+                    <p>Cuelga y se balancea de un carril a otro. Vete al lado libre o pasa por debajo.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">⤓</span>
+                    <h3>Prensa</h3>
+                    <p>Su barra sale del techo y <strong>cae a plomo</strong> hasta el suelo. Si la ves bajar, prepárate a saltar.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">⤒</span>
+                    <h3>Polea</h3>
+                    <p>Su barra sale del suelo y <strong>sube</strong> hasta la altura del pecho. Si la ves subir, solo se pasa por debajo.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">〰</span>
+                    <h3>La comba</h3>
+                    <p>Llega alta y <strong>baja hasta barrer el suelo</strong>, siempre. Ocupa los dos carriles, así que cambiarse no sirve: se salta y punto.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-acero">●</span>
+                    <h3>Balón medicinal</h3>
+                    <p>Viene rodando y se cambia de carril por el camino. Sáltalo o déjale sitio.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-verde">≡</span>
+                    <h3>Escalera de agilidad</h3>
+                    <p>No hace daño y no te frena. De momento es solo decorado del suelo.</p>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon icon-verde">✦</span>
+                    <h3>Esquives al límite</h3>
+                    <p>No hay nada que recoger. Si te libras por los pelos —saltando justo, agachándote justo o cambiándote en el último momento— salta un <strong>PERFECTO</strong>. Es lo único que se premia.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chuleta de controles -->
+        <section class="controls" id="movimientos">
+            <h2 class="controls-title">Los cuatro movimientos</h2>
+            <div class="controls-grid">
+                <div class="ctrl-card">
+                    <span class="ctrl-icon">↑</span>
+                    <h3>Salta</h3>
+                    <p>Un salto de verdad, con los dos pies.</p>
+                    <span class="ctrl-key">Teclado: ↑ / W / Espacio</span>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon">↓</span>
+                    <h3>Agáchate</h3>
+                    <p>Sentadilla rápida para pasar por debajo.</p>
+                    <span class="ctrl-key">Teclado: ↓ / S</span>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon">←</span>
+                    <h3>Carril izquierdo</h3>
+                    <p>Inclínate o da medio paso a la izquierda.</p>
+                    <span class="ctrl-key">Teclado: ← / A</span>
+                </div>
+                <div class="ctrl-card">
+                    <span class="ctrl-icon">→</span>
+                    <h3>Carril derecho</h3>
+                    <p>Igual hacia el otro lado. Solo hay dos carriles: te quedas en el último hasta que cambies.</p>
+                    <span class="ctrl-key">Teclado: → / D</span>
+                </div>
+            </div>
+            <p class="controls-foot">¿Va a tirones? Baja la ventana de tamaño o cierra pestañas: el detector va por GPU y lo agradece. En móvil, mejor en horizontal.</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-container">
+            <p>&copy; 2026 GymSpeak · <a href="/">BotizLab</a> · <a href="https://botizlab.github.io/gymspeak-web/privacidad.html">Privacidad</a></p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/juego.js"></script>
+</body>
+</html>

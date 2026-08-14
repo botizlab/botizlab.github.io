@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BotizLab — Mis aplicaciones</title>
-  <meta name="description" content="BotizLab — las aplicaciones de Carlos Botiz, en un solo sitio." />
-  <meta property="og:title" content="BotizLab" />
-  <meta property="og:description" content="Mis aplicaciones, en un solo sitio." />
+  <title>Carlos Botiz — Apps y juegos</title>
+  <meta name="description" content="Hago apps y juegos yo solo, de principio a fin. GymSpeak para el gimnasio, y un juego que se controla moviendo el cuerpo." />
+  <meta property="og:title" content="Carlos Botiz" />
+  <meta property="og:description" content="Apps y juegos hechos de principio a fin." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://botizlab.github.io/" />
   <meta name="theme-color" content="#09090b" />
@@ -18,9 +18,10 @@
   <!-- Navbar -->
   <nav class="nav">
     <div class="container nav-inner">
-      <a class="brand" href="/">Botiz<i>Lab</i></a>
+      <a class="brand" href="/">Carlos <i>Botiz</i></a>
       <button class="nav-toggle" aria-label="Abrir menú" id="navToggle">≡</button>
       <div class="nav-links" id="navLinks">
+        <a href="#juegos">Juegos</a>
         <a href="#apps">Apps</a>
         <a href="#contacto">Contacto</a>
       </div>
@@ -30,15 +31,38 @@
   <!-- Hero -->
   <header class="hero">
     <div class="container reveal">
-      <span class="tagline">Carlos Botiz</span>
-      <h1>BotizLab</h1>
-      <p>Mis aplicaciones, en un solo sitio.</p>
+      <span class="tagline">Desarrollo independiente</span>
+      <h1>Carlos Botiz</h1>
+      <p>Hago apps y juegos de principio a fin. Aquí está lo que llevo publicado.</p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="#apps">Ver apps</a>
-        <a class="btn btn-ghost" href="#contacto">Contacto</a>
+        <a class="btn btn-primary" href="/juego/">Jugar ahora</a>
+        <a class="btn btn-ghost" href="#apps">Ver las apps</a>
       </div>
     </div>
   </header>
+
+  <!-- Juegos primero: se prueba sin instalar nada, es el mejor gancho -->
+  <section class="section" id="juegos">
+    <div class="container">
+      <div class="section-title reveal">Para jugar ahora mismo</div>
+
+      <div class="app wide reveal">
+        <div class="app-screen">
+          <div class="screen"><img src="assets/runner-cap.jpg" alt="Partida de GymSpeak Runner" loading="lazy" /></div>
+        </div>
+        <div class="app-info">
+          <div class="app-head">
+            <h2>GymSpeak Runner</h2>
+          </div>
+          <p class="desc">Un juego que se controla <strong>moviendo el cuerpo</strong>: saltas tú y salta el personaje, te agachas y se agacha. La cámara te lee dentro del propio navegador, así que el vídeo no sale de tu dispositivo. También se juega con el teclado.</p>
+          <div><span class="meta">En el navegador · sin instalar nada</span></div>
+          <div class="app-cta">
+            <a class="btn btn-primary" href="/juego/">Jugar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Apps -->
   <section class="section" id="apps">
@@ -55,15 +79,15 @@
             <h2>GymSpeak</h2>
           </div>
           <p class="desc">Registra tus entrenamientos hablando. IA que entiende tus series, mide tu progreso y te guía.</p>
-          <div><span class="meta">App móvil</span></div>
+          <div><span class="meta">Android</span></div>
           <div class="app-cta">
             <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app" target="_blank" rel="noopener">Google Play</a>
-            <a class="btn btn-ghost" href="https://botizlab.github.io/gymspeak-web/" target="_blank" rel="noopener">Web</a>
+            <a class="btn btn-ghost" href="https://botizlab.github.io/gymspeak-web/" target="_blank" rel="noopener">Su web</a>
           </div>
         </div>
       </div>
 
-      <div class="soon reveal">Más apps en camino</div>
+      <div class="soon reveal">Más cosas en camino</div>
     </div>
   </section>
 
@@ -87,8 +111,8 @@
   <!-- Footer -->
   <footer>
     <div class="container footer-inner">
-      <span>© <span id="year"></span> BotizLab</span>
-      <b>Carlos Botiz</b>
+      <span>© <span id="year"></span> Carlos Botiz</span>
+      <b>BotizLab</b>
     </div>
   </footer>
 

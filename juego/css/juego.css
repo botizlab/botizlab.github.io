@@ -1,0 +1,682 @@
+/* =========================================
+   GymSpeak Runner - juego por cámara
+   ========================================= */
+
+.game-main {
+    padding: 40px 24px 80px;
+}
+
+.game-intro {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 32px;
+}
+
+.game-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 16px 0 12px;
+}
+
+.game-sub {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+}
+
+.game-sub strong {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+/* ================= Escenario ================= */
+.stage {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    background: #0b0d11;
+    aspect-ratio: 900 / 560;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Cámara en miniatura */
+.cam-box {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 180px;
+    aspect-ratio: 4 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    background: #000;
+    z-index: 3;
+}
+
+.cam-box video,
+.cam-box canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.cam-box video {
+    opacity: 0.55;
+}
+
+.cam-tag {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 99px;
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--accent-green);
+}
+
+.cam-tag.lost {
+    color: #ffb454;
+}
+
+/* Marcador */
+.hud {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: flex;
+    gap: 18px;
+    padding: 10px 16px;
+    border-radius: 14px;
+    background: rgba(8, 8, 10, 0.55);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    z-index: 3;
+}
+
+.hud-item {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.hud-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+.hud-item strong {
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.hud-lives strong {
+    color: #ff5d6c;
+    letter-spacing: 2px;
+}
+
+/* El rival, durante un duelo */
+.rival {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.15;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: rgba(8, 8, 10, 0.55);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    z-index: 3;
+}
+
+.rival-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+}
+
+.rival strong {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+}
+
+.rival-estado {
+    font-size: 0.68rem;
+    color: var(--accent-green);
+}
+
+.rival.caido strong { color: #ff5d6c; }
+.rival.caido .rival-estado { color: #ff5d6c; }
+
+/* Cuando hay cámara, el rival se aparta para no taparla */
+.cam-box:not([hidden]) ~ .rival { top: auto; bottom: 62px; }
+
+/* Formulario de acceso */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.login-form input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text-main);
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: var(--accent-green);
+}
+
+.login-error {
+    color: #ff5d6c;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* Botones dentro del escenario */
+.hud-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-border);
+    color: var(--text-main);
+    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    align-self: center;
+    line-height: 1;
+    transition: background 0.2s ease;
+}
+
+.hud-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* Récord y sonido, arriba a la derecha bajo la cámara */
+.topbar {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 3;
+}
+
+.record-chip {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    background: rgba(8, 8, 10, 0.55);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border);
+    border-radius: 99px;
+    padding: 6px 12px;
+}
+
+.record-chip strong {
+    color: var(--accent-green);
+    font-size: 0.85rem;
+    margin-left: 4px;
+}
+
+/* Iconos de la leyenda de obstáculos */
+.icon-verde { background: rgba(52, 210, 123, 0.12); color: var(--accent-green); }
+.icon-acero { background: rgba(126, 138, 156, 0.14); color: #9aa6b8; }
+
+/* Aviso del gesto detectado */
+.gesture-flash {
+    position: absolute;
+    left: 50%;
+    top: 22%;
+    transform: translateX(-50%);
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-green);
+    text-shadow: 0 2px 20px rgba(52, 210, 123, 0.5);
+    pointer-events: none;
+    z-index: 3;
+    animation: flashPop 0.45s ease-out forwards;
+}
+
+@keyframes flashPop {
+    0%   { opacity: 0; transform: translateX(-50%) scale(0.7); }
+    30%  { opacity: 1; transform: translateX(-50%) scale(1.05); }
+    100% { opacity: 0; transform: translateX(-50%) scale(1.15); }
+}
+
+/* ================= Capas de estado ================= */
+.overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(8, 8, 10, 0.82);
+    backdrop-filter: blur(6px);
+    z-index: 4;
+}
+
+.overlay[hidden] {
+    display: none;
+}
+
+.panel {
+    text-align: center;
+    max-width: 480px;
+}
+
+.panel[hidden] {
+    display: none;
+}
+
+.panel h2 {
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.panel-note {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.panel-legal {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    margin-top: 16px;
+    opacity: 0.75;
+}
+
+.panel-score {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.panel-score strong {
+    color: var(--accent-green);
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+/* Resumen de la sesión al caer */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 0 0 10px;
+}
+
+.stat {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 10px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stat-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.stat strong {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--accent-green);
+}
+
+.stats-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    opacity: 0.75;
+    margin-bottom: 18px;
+}
+
+@media (max-width: 480px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+.panel-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Los botones no heredan la tipografía por defecto */
+.panel-actions button,
+.panel-actions a {
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 1rem;
+}
+
+.panel-actions button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Pie simplificado de esta página */
+.game-body .footer-container {
+    justify-content: center;
+    margin-bottom: 0;
+    color: var(--text-muted);
+}
+
+.game-body .footer-container a {
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.game-body .footer-container a:hover {
+    color: var(--accent-green);
+}
+
+/* Ruedita de calibración */
+.calib-ring {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 14px;
+}
+
+.calib-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.calib-ring circle {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+}
+
+.calib-bg {
+    stroke: rgba(255, 255, 255, 0.08);
+}
+
+.calib-fg {
+    stroke: var(--accent-green);
+    stroke-dasharray: 327;
+    stroke-dashoffset: 327;
+    transition: stroke-dashoffset 0.1s linear;
+}
+
+.calib-ring span {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    font-weight: 800;
+}
+
+.calib-state {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.calib-state.ok {
+    color: var(--accent-green);
+}
+
+.spinner {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    border-top-color: var(--accent-green);
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ================= Chuleta de controles ================= */
+.controls {
+    max-width: 900px;
+    margin: 56px auto 0;
+}
+
+.controls-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+}
+
+.ctrl-card {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+}
+
+.ctrl-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(52, 210, 123, 0.12);
+    color: var(--accent-green);
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.ctrl-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.ctrl-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.ctrl-key {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.controls-foot {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 24px;
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 640px) {
+    .cam-box {
+        width: 110px;
+        top: 10px;
+        right: 10px;
+    }
+
+    .hud {
+        gap: 12px;
+        padding: 8px 12px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .hud-item strong {
+        font-size: 1rem;
+    }
+
+    .panel-actions {
+        flex-direction: column;
+    }
+
+    .panel-actions button,
+    .panel-actions a {
+        width: 100%;
+    }
+}
+
+/* La cámara a lo grande mientras te colocas: para verte hay que VERTE, no
+   adivinar en un recuadro de 180 píxeles */
+.cam-box.grande {
+    inset: 0;
+    top: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    aspect-ratio: auto;
+    border-radius: 0;
+    border: none;
+    z-index: 3;
+}
+
+.cam-box.grande video { opacity: 0.9; }
+.cam-box.grande .cam-tag { display: none; }
+
+.panel-ancho { max-width: 560px; }
+
+.preview-aviso {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #ffb454;
+    background: rgba(8, 8, 10, 0.72);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.preview-aviso.ok { color: var(--accent-green); }
+
+/* Con la cámara grande detrás, el panel necesita fondo propio */
+#panelPreview h2,
+#panelPreview .panel-note {
+    background: rgba(8, 8, 10, 0.72);
+    border-radius: 12px;
+    padding: 8px 14px;
+}
+
+/* Pantalla completa: el escenario se come la pantalla entera */
+.stage:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    aspect-ratio: auto;
+    border-radius: 0;
+    border: none;
+}
+
+/* ================= Móvil en vertical =================
+   En un teléfono de pie, un escenario apaisado se queda en una franja de nada
+   en medio de la pantalla. Aquí el juego pasa a ocupar casi todo el alto: el
+   render lee la forma del hueco y se compone en vertical solo. */
+@media (max-width: 820px) and (orientation: portrait) {
+    .game-main { padding: 12px 10px 48px; }
+
+    .game-intro { margin-bottom: 16px; }
+    .game-title { font-size: clamp(1.5rem, 7vw, 2.1rem); }
+    .game-sub { font-size: 0.92rem; }
+
+    .stage {
+        width: 100%;
+        max-width: none;
+        aspect-ratio: auto;          /* manda la altura, no la proporción */
+        height: min(76vh, 720px);
+        border-radius: 16px;
+    }
+
+    /* El marcador, en una fila compacta que no se coma la pista */
+    .hud {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        gap: 12px;
+        padding: 8px 12px;
+        justify-content: space-between;
+    }
+    .hud-item strong { font-size: 1.05rem; }
+    .hud-label { font-size: 0.58rem; }
+
+    .topbar { right: 10px; bottom: 10px; gap: 8px; }
+    .record-chip { font-size: 0.62rem; padding: 5px 9px; }
+
+    /* La cámara y el rival se reparten el hueco de abajo */
+    .cam-box { width: 96px; top: auto; bottom: 52px; right: 10px; }
+    .rival {
+        top: auto;
+        bottom: 52px;
+        left: 10px;
+        right: auto;
+        padding: 7px 11px;
+    }
+    .rival strong { font-size: 1rem; }
+    .cam-box:not([hidden]) ~ .rival { bottom: 52px; }
+
+    .gesture-flash { font-size: 1.1rem; top: 26%; }
+    .panel h2 { font-size: 1.2rem; }
+    .panel-note { font-size: 0.88rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gesture-flash,
+    .spinner {
+        animation: none;
+    }
+}

@@ -34,6 +34,7 @@
                 <li><a href="#movimientos">Movimientos</a></li>
                 <li><a href="https://botizlab.github.io/gymspeak-web/">La app</a></li>
                 <li><a href="/" class="btn-outline">Carlos Botiz</a></li>
+                <li><span class="hueco-cuenta" id="huecoCuenta"></span></li>
             </ul>
         </div>
     </nav>
@@ -291,5 +292,11 @@
     </footer>
 
     <script type="module" src="js/juego.js"></script>
+    <script type="module">
+        // La misma cuenta que la web y que la app. Al estar en el mismo origen
+        // la sesión ya viene compartida: no hay nada que sincronizar.
+        import { montarBoton } from '/js/cuenta.js?v=5';
+        montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
+    </script>
 </body>
 </html>

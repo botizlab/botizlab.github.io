@@ -680,3 +680,22 @@
         animation: none;
     }
 }
+
+/* ─── Botón de cuenta en la barra ─────────────────────────────────────────
+   Las reglas están copiadas del CSS del hub a propósito: el juego es una web
+   autónoma y no debe depender de una hoja de estilos de otra carpeta. */
+.cuenta-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 700; white-space: nowrap; text-decoration: none;
+    color: var(--text-primary, #f4f4f6);
+    border: 1px solid var(--glass-border, #26262c); border-radius: 999px;
+    padding: 5px 12px 5px 6px;
+    transition: border-color .18s, transform .18s;
+}
+.cuenta-btn:hover { border-color: var(--accent-green, #5ad67d); transform: translateY(-1px); }
+.cuenta-entrar { padding: 6px 15px; }
+.cuenta-emoji {
+    width: 22px; height: 22px; display: grid; place-items: center; font-size: 13px;
+    background: rgba(255, 255, 255, .07); border-radius: 50%; flex: 0 0 auto;
+}
+.cuenta-nombre { max-width: 12ch; overflow: hidden; text-overflow: ellipsis; }

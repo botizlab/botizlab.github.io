@@ -139,9 +139,14 @@ document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     // Nadie escribe un mensaje entero en tres segundos
     if (Date.now() - abierto < 3000) { decir('Tómate un segundo más y dale otra vez.', 'mal'); return; }
 
+    // Con sesión iniciada el nombre y el correo salen del perfil, así que esos
+    // dos campos ni se enseñan ni se validan
+    const conCuenta = window.__perfilContacto || null;
+    const aRevisar = conCuenta ? ['asunto', 'mensaje'] : Object.keys(REGLAS);
+
     // Se revisan TODOS, no se para en el primero: así ves de golpe todo lo que
     // hay que arreglar en vez de descubrirlo de uno en uno
-    const malos = Object.keys(REGLAS).filter((n) => !revisar(n));
+    const malos = aRevisar.filter((n) => !revisar(n));
     if (malos.length) {
       decir(malos.length === 1 ? 'Falta un campo por corregir.' : `Faltan ${malos.length} campos por corregir.`, 'mal');
       campo(malos[0]).focus();
@@ -152,17 +157,23 @@ document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     decir('Enviando…');
 
     try {
+      // Con sesión hay que ir con el token del usuario, no con la clave
+      // anónima: si no, auth.uid() sale nulo y el mensaje llega sin firmar
+      const token = conCuenta && window.__tokenCuenta ? await window.__tokenCuenta() : null;
+
       const res = await fetch(`${SUPABASE_URL}/rest/v1/mensajes_web`, {
         method: 'POST',
         headers: {
           apikey: SUPABASE_ANON,
-          Authorization: `Bearer ${SUPABASE_ANON}`,
+          Authorization: `Bearer ${token || SUPABASE_ANON}`,
           'Content-Type': 'application/json',
           Prefer: 'return=minimal'
         },
+        // El user_id NO se manda: lo pone la base de datos con auth.uid(), para
+        // que nadie pueda firmar un mensaje con la cuenta de otro
         body: JSON.stringify({
-          nombre: datos.nombre.trim(),
-          email: datos.email.trim(),
+          nombre: conCuenta ? conCuenta.nombre : datos.nombre.trim(),
+          email: conCuenta ? conCuenta.email : datos.email.trim(),
           asunto: datos.asunto.trim(),
           mensaje: datos.mensaje.trim()
         })

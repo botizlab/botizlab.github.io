@@ -1,0 +1,101 @@
+/* La página de cuenta. Hereda todo de ../css/styles.css; aquí solo lo suyo. */
+
+.estrecho { max-width: 560px; }
+main.estrecho { padding-top: 40px; }
+
+.cargando { color: var(--faint); text-align: center; padding: 60px 0; font-size: 14px; }
+
+/* ─── Entrar / crear cuenta ─────────────────────────────── */
+.pestanas {
+  display: flex; gap: 4px; padding: 4px; margin-bottom: 18px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 11px;
+}
+.pestanas button {
+  flex: 1; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  background: none; border: 0; color: var(--muted); border-radius: 8px; padding: 8px;
+  transition: background .18s, color .18s;
+}
+.pestanas button:hover { color: var(--text); }
+.pestanas button[aria-selected="true"] { background: var(--surface-2); color: var(--text); }
+
+.explica { color: var(--muted); font-size: 13.5px; margin-bottom: 18px; }
+
+#formAcceso { display: flex; flex-direction: column; gap: 12px; }
+#formAcceso label { display: flex; flex-direction: column; gap: 6px; }
+#formAcceso label > span,
+#formPerfil label > span {
+  font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--faint);
+}
+#formAcceso input, #formPerfil input {
+  font: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+  padding: 10px 12px; width: 100%; transition: border-color .18s;
+}
+#formAcceso input:focus, #formPerfil input:focus { outline: none; border-color: var(--accent); }
+#formAcceso input.malo, #formPerfil input.malo { border-color: #d9614a; }
+#formAcceso input::placeholder, #formPerfil input::placeholder { color: var(--faint); }
+
+.btn-texto {
+  font: inherit; font-size: 12.5px; background: none; border: 0; cursor: pointer;
+  color: var(--muted); text-decoration: underline; text-underline-offset: 3px; padding: 0;
+}
+.btn-texto:hover { color: var(--accent); }
+.btn-texto[hidden] { display: none; }
+
+.legal { font-size: 11.5px; color: var(--faint); margin-top: 16px; }
+.legal a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.legal a:hover { color: var(--accent); }
+
+/* ─── La ficha del perfil ───────────────────────────────── */
+.ficha-cab { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.emoji-grande {
+  width: 62px; height: 62px; display: grid; place-items: center; font-size: 30px;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 15px;
+  flex: 0 0 auto;
+}
+.ficha-cab h1 { font-size: 19px; font-weight: 800; letter-spacing: -.01em; }
+.ficha-cab .usuario { font-size: 13px; color: var(--accent); }
+.ficha-cab .btn { margin-left: auto; }
+
+.datos-cuenta {
+  margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border);
+  display: grid; gap: 12px;
+}
+.datos-cuenta > div { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: baseline; }
+.datos-cuenta dt {
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--faint);
+}
+.datos-cuenta dd { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+
+#formPerfil { display: flex; flex-direction: column; gap: 14px; }
+#formPerfil label { display: flex; flex-direction: column; gap: 6px; }
+
+.emojis { display: flex; flex-wrap: wrap; gap: 7px; }
+.emoji-op {
+  width: 40px; height: 40px; font-size: 19px; cursor: pointer; line-height: 1;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+  transition: border-color .15s, transform .15s;
+}
+.emoji-op:hover { transform: translateY(-2px); border-color: var(--muted); }
+.emoji-op[aria-checked="true"] { border-color: var(--accent); background: var(--surface-2); }
+
+/* ─── A dónde vale tu cuenta ────────────────────────────── */
+.enlaces { display: grid; gap: 10px; }
+.destino {
+  display: block; padding: 15px 17px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  transition: border-color .18s, transform .18s;
+}
+.destino:hover { border-color: var(--accent); transform: translateY(-2px); }
+.destino b { display: block; font-size: 14.5px; }
+.destino span { font-size: 12.5px; color: var(--muted); }
+
+.borrar { margin-top: 26px; font-size: 12.5px; color: var(--faint); text-align: center; }
+.borrar a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.borrar a:hover { color: #e57b63; }
+
+@media (max-width: 520px) {
+  .datos-cuenta > div { grid-template-columns: 1fr; gap: 2px; }
+  .ficha-cab .btn { margin-left: 0; }
+}

@@ -11,7 +11,7 @@
   <meta property="og:url" content="https://botizlab.github.io/" />
   <meta name="theme-color" content="#09090b" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css?v=4" />
+  <link rel="stylesheet" href="css/styles.css?v=5" />
 </head>
 <body>
 
@@ -35,6 +35,7 @@
       <div class="nav-links" id="navLinks">
         <a href="#proyectos">Proyectos</a>
         <a href="#contacto">Contacto</a>
+        <span class="hueco-cuenta" id="huecoCuenta"></span>
       </div>
     </div>
   </nav>
@@ -133,14 +134,17 @@
     <section id="contacto">
       <h2 class="label reveal">Contacto</h2>
       <div class="card contacto reveal">
-        <p>¿Te cuadra algo de esto? Escríbeme.</p>
+        <p id="introContacto">¿Te cuadra algo de esto? Escríbeme.</p>
+
+        <!-- Si hay sesión, esto sustituye a los campos de nombre y correo -->
+        <p class="firmando" id="firmando" hidden></p>
 
         <!-- El `onsubmit` de aquí es una red de seguridad, no el manejador: va en
              el propio HTML, así que existe aunque el JS no cargue o el navegador
              sirva una versión vieja de caché. Sin él, un envío nativo mandaría el
              nombre, el correo y el mensaje a la barra de direcciones. -->
         <form class="formulario" id="formContacto" novalidate onsubmit="return false">
-          <div class="campos">
+          <div class="campos" id="camposIdentidad">
             <label>
               <span>Nombre</span>
               <input type="text" name="nombre" maxlength="80" required autocomplete="name"
@@ -196,6 +200,28 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=4"></script>
+  <script src="js/main.js?v=5"></script>
+  <script type="module">
+    // La cuenta va aparte y en módulo: solo se descarga el SDK de Supabase si
+    // hace falta, y la portada no espera por ello para pintarse.
+    import { montarBoton, perfil, comoTeLlamas, sesion } from './js/cuenta.js?v=5';
+
+    montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
+
+    // El formulario necesita el token EN EL MOMENTO de enviar, no ahora: los
+    // tokens caducan y se renuevan solos, así que se pide fresco cada vez.
+    window.__tokenCuenta = async () => (await sesion())?.access_token || null;
+
+    // Con sesión iniciada no se piden el nombre ni el correo: ya los tenemos
+    perfil().then((p) => {
+      if (!p) return;
+      document.getElementById('camposIdentidad').hidden = true;
+      const firma = document.getElementById('firmando');
+      firma.hidden = false;
+      firma.textContent = `Escribes como ${comoTeLlamas(p)} · ${p.email}`;
+      // Se deja preparado justo lo que el formulario necesita, ya resuelto
+      window.__perfilContacto = { nombre: comoTeLlamas(p), email: p.email };
+    });
+  </script>
 </body>
 </html>

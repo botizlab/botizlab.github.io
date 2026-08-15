@@ -511,6 +511,9 @@ function finishGame() {
     $('statKcal').textContent = `${Math.round(game.kcal)} kcal`;
 
     paintRecord();
+    // La marca también sube a la clasificación, si hay sesión. No se espera a
+    // que responda: que la red vaya lenta no puede retrasar el resultado.
+    if (window.__subirMarca) window.__subirMarca(game.segundos);
     if (duelo.activo) { terminarDuelo(segundos); return; }
     showPanel('over');
 }

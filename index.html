@@ -11,7 +11,7 @@
   <meta property="og:url" content="https://botizlab.github.io/" />
   <meta name="theme-color" content="#09090b" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css?v=5" />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
 </head>
 <body>
 
@@ -136,9 +136,6 @@
       <div class="card contacto reveal">
         <p id="introContacto">¿Te cuadra algo de esto? Escríbeme.</p>
 
-        <!-- Si hay sesión, esto sustituye a los campos de nombre y correo -->
-        <p class="firmando" id="firmando" hidden></p>
-
         <!-- El `onsubmit` de aquí es una red de seguridad, no el manejador: va en
              el propio HTML, así que existe aunque el JS no cargue o el navegador
              sirva una versión vieja de caché. Sin él, un envío nativo mandaría el
@@ -200,11 +197,11 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=5"></script>
+  <script src="js/main.js?v=6"></script>
   <script type="module">
     // La cuenta va aparte y en módulo: solo se descarga el SDK de Supabase si
     // hace falta, y la portada no espera por ello para pintarse.
-    import { montarBoton, perfil, comoTeLlamas, sesion } from './js/cuenta.js?v=5';
+    import { montarBoton, perfil, comoTeLlamas, sesion } from './js/cuenta.js?v=6';
 
     montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
@@ -212,15 +209,14 @@
     // tokens caducan y se renuevan solos, así que se pide fresco cada vez.
     window.__tokenCuenta = async () => (await sesion())?.access_token || null;
 
-    // Con sesión iniciada no se piden el nombre ni el correo: ya los tenemos
+    // Con sesión, los campos aparecen ya rellenos con tu cuenta. Sin cartel:
+    // no hace falta contarlo, se ve. Y siguen siendo editables por si alguien
+    // quiere escribir a nombre de otra cosa.
     perfil().then((p) => {
       if (!p) return;
-      document.getElementById('camposIdentidad').hidden = true;
-      const firma = document.getElementById('firmando');
-      firma.hidden = false;
-      firma.textContent = `Escribes como ${comoTeLlamas(p)} · ${p.email}`;
-      // Se deja preparado justo lo que el formulario necesita, ya resuelto
-      window.__perfilContacto = { nombre: comoTeLlamas(p), email: p.email };
+      const form = document.getElementById('formContacto');
+      if (!form.nombre.value) form.nombre.value = comoTeLlamas(p);
+      if (!form.email.value) form.email.value = p.email || '';
     });
   </script>
 </body>

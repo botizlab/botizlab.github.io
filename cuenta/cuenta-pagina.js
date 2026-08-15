@@ -8,10 +8,9 @@
 import {
     sesion, entrar, registrar, salir, recuperar,
     perfil, guardarPerfil, comoTeLlamas
-} from '../js/cuenta.js?v=5';
+} from '../js/cuenta.js?v=6';
 
 const $ = (id) => document.getElementById(id);
-const EMOJIS = ['💪', '🏋️', '🔥', '⚡', '🏃', '🥇', '🧠', '🦍', '🐺', '🚀', '🎯', '🥋'];
 
 let modo = 'entrar';
 
@@ -136,40 +135,16 @@ $('btnOlvide').addEventListener('click', async () => {
 
 // ═══════════════════ El perfil ═══════════════════
 
-let emojiElegido = '💪';
-
-function pintarEmojis() {
-    const caja = $('emojis');
-    caja.textContent = '';
-    for (const e of EMOJIS) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'emoji-op';
-        b.textContent = e;
-        b.setAttribute('role', 'radio');
-        b.setAttribute('aria-checked', String(e === emojiElegido));
-        b.addEventListener('click', () => {
-            emojiElegido = e;
-            $('emoji').textContent = e;
-            caja.querySelectorAll('.emoji-op').forEach((o) =>
-                o.setAttribute('aria-checked', String(o.textContent === e)));
-        });
-        caja.append(b);
-    }
-}
-
 async function pintarPerfil(p) {
     $('nombreGrande').textContent = comoTeLlamas(p);
     $('usuarioChico').textContent = p.username ? '@' + p.username : 'Sin nombre de usuario';
     $('correo').textContent = p.email || '';
     $('emoji').textContent = p.avatar_emoji || '💪';
-    emojiElegido = p.avatar_emoji || '💪';
     $('desde').textContent = p.created_at
         ? new Date(p.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
         : '—';
     $('pNombre').value = p.display_name || '';
     $('pUsuario').value = p.username || '';
-    pintarEmojis();
 }
 
 $('formPerfil').addEventListener('submit', async (e) => {
@@ -184,8 +159,7 @@ $('formPerfil').addEventListener('submit', async (e) => {
     try {
         await guardarPerfil({
             display_name: $('pNombre').value.trim() || null,
-            username: ($('pUsuario').value.trim() || '').toLowerCase() || null,
-            avatar_emoji: emojiElegido
+            username: ($('pUsuario').value.trim() || '').toLowerCase() || null
         });
         decir($('avisoPerfil'), 'Guardado.', 'ok');
         await pintarPerfil(await perfil());

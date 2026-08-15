@@ -30,6 +30,7 @@
                 <span class="logo-text">GymSpeak Runner</span>
             </a>
             <ul class="nav-links">
+                <li><a href="#clasificacion">Clasificación</a></li>
                 <li><a href="#obstaculos">Obstáculos</a></li>
                 <li><a href="#movimientos">Movimientos</a></li>
                 <li><a href="https://botizlab.github.io/gymspeak-web/">La app</a></li>
@@ -196,6 +197,30 @@
         </div>
 
         <!-- Qué hay en la pista -->
+        <!-- Clasificación: una fila por persona, la mejor marca de cada uno -->
+        <section class="controls" id="clasificacion">
+            <h2 class="controls-title">Los que más aguantan</h2>
+            <p class="tabla-nota">Solo cuenta tu mejor marca: nadie sale dos veces. Si la superas, sube tu fila.</p>
+
+            <div class="tabla-caja">
+                <table class="tabla-top">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Jugador</th>
+                            <th scope="col">Marca</th>
+                            <th scope="col">Cuándo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topCuerpo"></tbody>
+                </table>
+            </div>
+
+            <p class="top-aviso" id="topAviso" role="status" aria-live="polite"></p>
+            <p class="mi-puesto" id="miPuesto" hidden></p>
+            <button class="btn-secondary btn-recargar" type="button" id="topRecargar">Recargar</button>
+        </section>
+
         <section class="controls" id="obstaculos">
             <h2 class="controls-title">Qué te vas a encontrar</h2>
             <div class="controls-grid">
@@ -295,8 +320,9 @@
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=5';
+        import { montarBoton } from '/js/cuenta.js?v=6';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
     </script>
+    <script type="module" src="js/clasificacion.js?v=6"></script>
 </body>
 </html>

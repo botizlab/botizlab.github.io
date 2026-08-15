@@ -141,25 +141,73 @@ export async function montarBoton(hueco, opciones = {}) {
 
     const p = await perfil();
     hueco.textContent = '';
+    hueco.classList.add('hueco-cuenta');
 
-    if (p) {
-        const a = document.createElement('a');
-        a.className = 'cuenta-btn';
-        a.href = rutaPerfil;
-        const emoji = document.createElement('span');
-        emoji.className = 'cuenta-emoji';
-        emoji.textContent = p.avatar_emoji || '💪';
-        const nombre = document.createElement('span');
-        nombre.className = 'cuenta-nombre';
-        nombre.textContent = comoTeLlamas(p);
-        a.append(emoji, nombre);
-        hueco.append(a);
+    // Sin sesión: un enlace y ya está, nada que desplegar
+    if (!p) {
+        const b = document.createElement('a');
+        b.className = 'cuenta-btn cuenta-entrar';
+        b.href = rutaPerfil;
+        b.textContent = 'Entrar';
+        hueco.append(b);
         return;
     }
 
-    const b = document.createElement('a');
-    b.className = 'cuenta-btn cuenta-entrar';
-    b.href = rutaPerfil;
-    b.textContent = 'Entrar';
-    hueco.append(b);
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'cuenta-btn';
+    boton.setAttribute('aria-expanded', 'false');
+    boton.setAttribute('aria-haspopup', 'menu');
+
+    const emoji = document.createElement('span');
+    emoji.className = 'cuenta-emoji';
+    emoji.textContent = p.avatar_emoji || '💪';
+    const nombre = document.createElement('span');
+    nombre.className = 'cuenta-nombre';
+    nombre.textContent = comoTeLlamas(p);
+    const flecha = document.createElement('span');
+    flecha.className = 'cuenta-flecha';
+    flecha.setAttribute('aria-hidden', 'true');
+    flecha.textContent = '▾';
+    boton.append(emoji, nombre, flecha);
+
+    const menu = document.createElement('div');
+    menu.className = 'cuenta-menu';
+    menu.setAttribute('role', 'menu');
+    menu.hidden = true;
+
+    const irPerfil = document.createElement('a');
+    irPerfil.href = rutaPerfil;
+    irPerfil.setAttribute('role', 'menuitem');
+    irPerfil.textContent = 'Mi cuenta';
+
+    const cerrar = document.createElement('button');
+    cerrar.type = 'button';
+    cerrar.setAttribute('role', 'menuitem');
+    cerrar.className = 'cuenta-salir';
+    cerrar.textContent = 'Cerrar sesión';
+    cerrar.addEventListener('click', async () => {
+        cerrar.disabled = true;
+        await salir();
+        location.reload();
+    });
+
+    menu.append(irPerfil, cerrar);
+    hueco.append(boton, menu);
+
+    const abrirCerrar = (abrir) => {
+        menu.hidden = !abrir;
+        boton.setAttribute('aria-expanded', String(abrir));
+    };
+
+    boton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirCerrar(menu.hidden);
+    });
+    // Un clic fuera o Escape lo cierran: si no, se queda abierto para siempre
+    document.addEventListener('click', () => abrirCerrar(false));
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !menu.hidden) { abrirCerrar(false); boton.focus(); }
+    });
+    menu.addEventListener('click', (e) => e.stopPropagation());
 }

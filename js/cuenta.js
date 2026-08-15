@@ -86,7 +86,7 @@ export async function perfil() {
     const sb = await conectar();
     const { data } = await sb
         .from('profiles')
-        .select('id, display_name, username, avatar_emoji, language, created_at')
+        .select('id, display_name, username, bio, avatar_emoji, weight_unit, public_calendar, language, created_at')
         .eq('id', s.user.id)
         .maybeSingle();
     return data ? { ...data, email: s.user.email } : { id: s.user.id, email: s.user.email };

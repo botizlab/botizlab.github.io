@@ -322,6 +322,9 @@
         // la sesión ya viene compartida: no hay nada que sincronizar.
         import { montarBoton } from '/js/cuenta.js?v=9';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
+
+        const { montarCorredor } = await import('/js/corredor.js?v=9');
+        montarCorredor('.nav-container');
     </script>
     <script type="module" src="js/clasificacion.js?v=9"></script>
 </body>

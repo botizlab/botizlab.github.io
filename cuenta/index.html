@@ -112,26 +112,57 @@
         </dl>
       </div>
 
-      <h2 class="label">Editar</h2>
+      <h2 class="label">Editar perfil</h2>
       <div class="card">
         <form id="formPerfil" novalidate onsubmit="return false">
-          <div class="campos">
-            <label>
-              <span>Nombre</span>
-              <input type="text" id="pNombre" maxlength="40" aria-describedby="e-pnombre" />
-              <small class="fallo" id="e-pnombre"></small>
-            </label>
-            <label>
-              <span>Usuario</span>
-              <input type="text" id="pUsuario" maxlength="20" placeholder="sin arroba" aria-describedby="e-pusuario" />
-              <small class="fallo" id="e-pusuario"></small>
-            </label>
-          </div>
+          <label>
+            <span>Nombre visible</span>
+            <input type="text" id="pNombre" maxlength="40" placeholder="Tu nombre" aria-describedby="e-pnombre" />
+            <small class="fallo" id="e-pnombre"></small>
+          </label>
+          <label>
+            <span>Usuario</span>
+            <input type="text" id="pUsuario" maxlength="24" placeholder="sin arroba" aria-describedby="e-pusuario" />
+            <small class="fallo" id="e-pusuario"></small>
+          </label>
+          <label>
+            <span>Bio <b class="contador" id="contadorBio"></b></span>
+            <textarea id="pBio" rows="2" maxlength="150" placeholder="Algo corto sobre ti"></textarea>
+          </label>
+          <label>
+            <span>Emoji</span>
+            <div class="emojis" id="emojis" role="radiogroup" aria-label="Elige un emoji"></div>
+          </label>
           <div class="envio">
-            <button class="btn btn-primary" type="submit" id="btnGuardar">Guardar</button>
+            <button class="btn btn-primary" type="submit" id="btnGuardar">Guardar perfil</button>
             <p class="aviso" id="avisoPerfil" role="status" aria-live="polite"></p>
           </div>
         </form>
+      </div>
+
+      <h2 class="label">Ajustes</h2>
+      <div class="card">
+        <form id="formAjustes" novalidate onsubmit="return false">
+          <label>
+            <span>Unidad de peso</span>
+            <select id="pUnidad">
+              <option value="kg">Kilogramos (kg)</option>
+              <option value="lb">Libras (lb)</option>
+            </select>
+          </label>
+          <label class="casilla ajuste">
+            <input type="checkbox" id="pCalendario" />
+            <span class="casilla-txt">Que mis amigos puedan ver mi calendario de entrenamientos.</span>
+          </label>
+          <div class="envio">
+            <button class="btn btn-primary" type="submit" id="btnAjustes">Guardar ajustes</button>
+            <p class="aviso" id="avisoAjustes" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+        <p class="nota-app">
+          El peso corporal, el sexo y el objetivo de entrenamiento se configuran en la app,
+          en la pantalla del Entrenador. La suscripción Pro, también.
+        </p>
       </div>
 
       <p class="borrar">
@@ -150,5 +181,9 @@
   </footer>
 
   <script type="module" src="cuenta-pagina.js?v=9"></script>
+  <script type="module">
+    import { montarCorredor } from '../js/corredor.js?v=9';
+    montarCorredor('.nav-inner');
+  </script>
 </body>
 </html>

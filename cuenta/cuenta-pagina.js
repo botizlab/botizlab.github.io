@@ -11,6 +11,8 @@ import {
 } from '../js/cuenta.js?v=9';
 
 const $ = (id) => document.getElementById(id);
+const EMOJIS = ['💪', '🏋️', '🔥', '⚡', '🏃', '🥇', '🧠', '🦍', '🐺', '🚀', '🎯', '🥋'];
+let emojiElegido = '💪';
 
 let modo = 'entrar';
 
@@ -24,12 +26,12 @@ const decir = (el, texto, clase) => {
 // Supabase: mínimo 6 caracteres, y el usuario es UNIQUE en la tabla.
 
 const CORREO = /^[^\s@]+@[^\s@.]+\.[^\s@]{2,}$/;
-const USUARIO = /^[a-z0-9_.]{3,20}$/;
+const USUARIO = /^[a-z0-9_.]{3,24}$/;
 
 const REGLAS = {
     nombre: (v) => (v && v.length > 40 ? 'Máximo 40 caracteres.' : null),
     usuario: (v) => (!v ? null
-        : !USUARIO.test(v.toLowerCase()) ? 'Entre 3 y 20 caracteres: letras, números, punto o guion bajo.'
+        : !USUARIO.test(v.toLowerCase()) ? 'Entre 3 y 24 caracteres: letras, números, punto o guion bajo.'
         : null),
     email: (v) => (!v ? 'Hace falta tu correo.'
         : !CORREO.test(v) ? 'Eso no parece un correo.'
@@ -176,7 +178,59 @@ async function pintarPerfil(p) {
         : '—';
     $('pNombre').value = p.display_name || '';
     $('pUsuario').value = p.username || '';
+    $('pBio').value = p.bio || '';
+    $('pUnidad').value = p.weight_unit === 'lb' ? 'lb' : 'kg';
+    $('pCalendario').checked = !!p.public_calendar;
+    emojiElegido = p.avatar_emoji || '💪';
+    pintarEmojis();
+    contarBio();
 }
+
+function pintarEmojis() {
+    const caja = $('emojis');
+    caja.textContent = '';
+    for (const e of EMOJIS) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'emoji-op';
+        b.textContent = e;
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', String(e === emojiElegido));
+        b.addEventListener('click', () => {
+            emojiElegido = e;
+            $('emoji').textContent = e;
+            caja.querySelectorAll('.emoji-op').forEach((o) =>
+                o.setAttribute('aria-checked', String(o.textContent === e)));
+        });
+        caja.append(b);
+    }
+}
+
+function contarBio() {
+    const n = $('pBio').value.length;
+    $('contadorBio').textContent = n ? `${n}/150` : '';
+}
+$('pBio').addEventListener('input', contarBio);
+
+// Los ajustes van en su propio formulario: son cosas distintas del perfil y
+// mezclarlas haría que guardar el nombre tocara también tu calendario
+$('formAjustes').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const boton = $('btnAjustes');
+    boton.disabled = true;
+    decir($('avisoAjustes'), 'Guardando…');
+    try {
+        await guardarPerfil({
+            weight_unit: $('pUnidad').value,
+            public_calendar: $('pCalendario').checked
+        });
+        decir($('avisoAjustes'), 'Guardado.', 'ok');
+    } catch (err) {
+        decir($('avisoAjustes'), err.message, 'mal');
+    } finally {
+        boton.disabled = false;
+    }
+});
 
 $('formPerfil').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -190,7 +244,10 @@ $('formPerfil').addEventListener('submit', async (e) => {
     try {
         await guardarPerfil({
             display_name: $('pNombre').value.trim() || null,
-            username: ($('pUsuario').value.trim() || '').toLowerCase() || null
+            // Se quita la arroba por si la escriben: en la tabla va sin ella
+            username: ($('pUsuario').value.trim().replace(/^@/, '') || '').toLowerCase() || null,
+            bio: $('pBio').value.trim() || null,
+            avatar_emoji: emojiElegido
         });
         decir($('avisoPerfil'), 'Guardado.', 'ok');
         await pintarPerfil(await perfil());

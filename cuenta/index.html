@@ -7,18 +7,23 @@
   <meta name="description" content="Tu cuenta de GymSpeak: la misma para la app, el juego y la web." />
   <meta name="theme-color" content="#09090b" />
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../css/styles.css?v=12" />
-  <link rel="stylesheet" href="cuenta.css?v=12" />
+  <link rel="stylesheet" href="../css/styles.css?v=13" />
+  <link rel="stylesheet" href="cuenta.css?v=13" />
 </head>
 <body>
 
   <nav class="nav">
     <div class="wrap nav-inner">
       <a class="mono" href="/" aria-label="Inicio">N<i>C</i>B</a>
-      <div class="nav-links">
-        <a href="/#proyectos">Proyectos</a>
+      <!-- El botón de cuenta va FUERA del menú plegable: en el móvil tiene que
+           verse siempre, para saber de un vistazo si estás dentro o no. -->
+      <div class="nav-derecha">
+        <div class="nav-links" id="navLinks">
+          <a href="/#proyectos">Proyectos</a>
         <a href="/juego/">Juego</a>
+        </div>
         <span class="hueco-cuenta" id="huecoCuenta"></span>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false">≡</button>
       </div>
     </div>
   </nav>
@@ -181,10 +186,10 @@
     </div>
   </footer>
 
-  <script type="module" src="cuenta-pagina.js?v=12"></script>
+  <script type="module" src="cuenta-pagina.js?v=13"></script>
   <script type="module">
-    import { montarCorredor } from '../js/corredor.js?v=12';
-    import { montarBoton } from '../js/cuenta.js?v=12';
+    import { montarCorredor } from '../js/corredor.js?v=13';
+    import { montarBoton } from '../js/cuenta.js?v=13';
     montarCorredor('.nav-inner');
     montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
   </script>

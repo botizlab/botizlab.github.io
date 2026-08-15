@@ -99,6 +99,16 @@ body::after {
     letter-spacing: -0.5px;
 }
 
+.nav-container { position: relative; }
+
+/* La derecha de la barra: enlaces plegables, cuenta y boton de menu */
+.nav-derecha { display: flex; align-items: center; gap: 16px; }
+
+.nav-toggle {
+    display: none; background: none; border: 0; cursor: pointer;
+    color: var(--text-main); font-size: 22px; line-height: 1; padding: 6px;
+}
+
 .nav-links {
     display: flex;
     gap: 32px;
@@ -549,9 +559,24 @@ html.js .slide-up {
         gap: 40px;
     }
     
+    /* Antes aqui ponia `display: none` y no habia boton de menu: en movil la
+       web se quedaba SIN navegacion y sin acceso a la cuenta. Ahora los
+       enlaces se pliegan y el boton de cuenta se queda siempre a la vista. */
+    .nav-toggle { display: block; }
     .nav-links {
-        display: none;
+        position: absolute; top: 100%; left: 0; right: 0;
+        flex-direction: column; gap: 0; align-items: stretch;
+        background: var(--bg-dark); border-bottom: 1px solid var(--glass-border);
+        max-height: 0; overflow: hidden; transition: max-height .3s ease;
     }
+    .nav-links.abierto { max-height: 420px; }
+    .nav-links li { width: 100%; border-top: 1px solid var(--glass-border); }
+    .nav-links li a, .nav-links li .btn-outline {
+        display: block; width: 100%; padding: 15px 24px;
+        border: 0; border-radius: 0; text-align: left;
+    }
+    /* El de cuenta no se pliega: sale de la lista y se queda en la barra */
+    .nav-links li:has(.hueco-cuenta) { display: none; }
 }
 
 /* Cinturon de seguridad: nada queda invisible aunque falle el JS de animaciones */
@@ -957,3 +982,4 @@ html.js .fade-in, html.js .slide-up { animation: gs-reveal 0s 2.5s forwards; }
     .play-cube { padding: 18px 26px; gap: 14px; }
     .play-cube-text strong { font-size: 1.3rem; }
 }
+

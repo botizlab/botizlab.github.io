@@ -99,6 +99,10 @@ img { max-width: 100%; }
 
 /* `align-items: center` es lo que endereza el botón de cuenta: sin él los
    elementos se estiran y su texto queda a distinta altura que los enlaces. */
+/* La derecha de la barra: enlaces, cuenta y el botón del menú. En escritorio
+   van los tres en fila; en móvil los enlaces se pliegan y los otros dos se
+   quedan siempre a la vista. */
+.nav-derecha { display: flex; align-items: center; gap: 18px; }
 .nav-links { display: flex; gap: 24px; align-items: center; }
 .nav-links a { color: var(--muted); font-size: 13.5px; font-weight: 600; transition: color .15s; }
 .nav-links a:hover { color: var(--text); }
@@ -283,6 +287,19 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 20px;
   .proyecto { grid-template-columns: 1fr; gap: 18px; }
   .thumb-app { max-width: 190px; }
 
+  /* La miniatura del juego a ancho completo: en móvil es lo que vende */
+  .proyecto .thumb { max-width: none; }
+
+  /* Los botones ocupan la línea: en el móvil se pulsa con el pulgar y un
+     botón estrecho al lado de otro se falla */
+  .acciones { flex-direction: column; align-items: stretch; }
+  .acciones .btn { justify-content: center; padding: 13px 18px; }
+
+  .contacto { align-items: stretch; }
+  .contacto .btn { justify-content: center; }
+  .redes { justify-content: center; gap: 14px 20px; }
+
+  .nav-derecha { gap: 10px; }
   .nav-toggle { display: block; }
   .nav-links {
     position: absolute; top: var(--nav-h); left: -22px; right: -22px;
@@ -290,8 +307,17 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 20px;
     background: var(--bg); border-bottom: 1px solid var(--border);
     max-height: 0; overflow: hidden; transition: max-height .3s ease;
   }
-  .nav-links.open { max-height: 160px; }
-  .nav-links a { padding: 14px 22px; width: 100%; border-top: 1px solid var(--border); }
+  .nav-links.open { max-height: 240px; }
+  .nav-links a { padding: 15px 22px; width: 100%; border-top: 1px solid var(--border); }
+
+  /* Nombres largos no pueden empujar al botón del menú fuera de la pantalla */
+  .cuenta-nombre { max-width: 7ch; }
+}
+
+/* Pantallas muy estrechas: el nombre estorba, basta con el emoji */
+@media (max-width: 380px) {
+  .cuenta-nombre { display: none; }
+  .cuenta-btn { padding: 5px 7px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

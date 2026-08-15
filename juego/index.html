@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/juego.css">
+    <link rel="stylesheet" href="css/style.css?v=13">
+    <link rel="stylesheet" href="css/juego.css?v=13">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -29,14 +29,17 @@
                 <img src="assets/logo.png" alt="Logo de GymSpeak" class="logo-img">
                 <span class="logo-text">GymSpeak Runner</span>
             </a>
-            <ul class="nav-links">
-                <li><a href="#clasificacion">Clasificación</a></li>
-                <li><a href="#obstaculos">Obstáculos</a></li>
-                <li><a href="#movimientos">Movimientos</a></li>
-                <li><a href="https://botizlab.github.io/gymspeak-web/">La app</a></li>
-                <li><a href="/" class="btn-outline">Carlos Botiz</a></li>
-                <li><span class="hueco-cuenta" id="huecoCuenta"></span></li>
-            </ul>
+            <div class="nav-derecha">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#clasificacion">Clasificación</a></li>
+                    <li><a href="#obstaculos">Obstáculos</a></li>
+                    <li><a href="#movimientos">Movimientos</a></li>
+                    <li><a href="https://botizlab.github.io/gymspeak-web/">La app</a></li>
+                    <li><a href="/" class="btn-outline">Carlos Botiz</a></li>
+                </ul>
+                <span class="hueco-cuenta" id="huecoCuenta"></span>
+                <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false">≡</button>
+            </div>
         </div>
     </nav>
 
@@ -316,16 +319,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js"></script>
+    <script type="module" src="js/juego.js?v=13"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=11';
+        import { montarBoton } from '/js/cuenta.js?v=13';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=11');
+        const { montarCorredor } = await import('/js/corredor.js?v=13');
         montarCorredor('.nav-container');
+
+        const { montarMenu } = await import('/js/menu.js?v=13');
+        montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=11"></script>
+    <script type="module" src="js/clasificacion.js?v=13"></script>
 </body>
 </html>

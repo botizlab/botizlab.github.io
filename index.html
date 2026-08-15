@@ -11,7 +11,7 @@
   <meta property="og:url" content="https://botizlab.github.io/" />
   <meta name="theme-color" content="#09090b" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css?v=11" />
+  <link rel="stylesheet" href="css/styles.css?v=13" />
 </head>
 <body>
 
@@ -21,11 +21,15 @@
       <a class="mono" href="/" aria-label="Inicio">N<i>C</i>B</a>
 
 
-      <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false">≡</button>
-      <div class="nav-links" id="navLinks">
-        <a href="#proyectos">Proyectos</a>
+      <!-- El botón de cuenta va FUERA del menú plegable: en el móvil tiene que
+           verse siempre, para saber de un vistazo si estás dentro o no. -->
+      <div class="nav-derecha">
+        <div class="nav-links" id="navLinks">
+          <a href="#proyectos">Proyectos</a>
         <a href="#contacto">Contacto</a>
+        </div>
         <span class="hueco-cuenta" id="huecoCuenta"></span>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false">≡</button>
       </div>
     </div>
   </nav>
@@ -187,12 +191,12 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=11"></script>
+  <script src="js/main.js?v=13"></script>
   <script type="module">
     // La cuenta va aparte y en módulo: solo se descarga el SDK de Supabase si
     // hace falta, y la portada no espera por ello para pintarse.
-    import { montarBoton, perfil, comoTeLlamas, sesion } from './js/cuenta.js?v=11';
-    import { montarCorredor } from './js/corredor.js?v=11';
+    import { montarBoton, perfil, comoTeLlamas, sesion } from './js/cuenta.js?v=13';
+    import { montarCorredor } from './js/corredor.js?v=13';
 
     montarCorredor('.nav-inner');
 

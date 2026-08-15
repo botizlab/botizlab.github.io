@@ -129,6 +129,71 @@ function traducir(msg) {
 // ═══════════════════════════ El botón de la barra ═══════════════════════════
 
 /**
+ * Los estilos van AQUÍ, con el componente, y no copiados en el CSS de cada web.
+ *
+ * Se intentó al revés y salió mal: al añadir el desplegable actualicé la hoja
+ * del hub y me dejé las otras dos, así que en la web del gimnasio y en el juego
+ * el menú aparecía suelto y sin pintar. Con las reglas dentro del módulo, quien
+ * lo usa lo recibe entero.
+ *
+ * Los colores salen de variables con alternativa, porque cada web tiene las
+ * suyas con nombres distintos.
+ */
+const ESTILOS = `
+.hueco-cuenta { position: relative; display: inline-flex; align-items: center; }
+.cuenta-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap;
+  text-decoration: none; cursor: pointer;
+  color: var(--text, var(--text-main, #f4f4f6));
+  background: none;
+  border: 1px solid var(--border, var(--glass-border, rgba(255,255,255,.1)));
+  border-radius: 999px; padding: 5px 12px 5px 6px;
+  transition: border-color .18s;
+}
+.cuenta-btn:hover, .cuenta-btn[aria-expanded="true"] {
+  border-color: var(--accent, var(--accent-green, #5ad67d));
+}
+.cuenta-entrar { padding: 6px 15px; color: var(--muted, var(--text-muted, #9a9aa3)); }
+.cuenta-entrar:hover { color: var(--text, var(--text-main, #f4f4f6)); }
+.cuenta-emoji {
+  width: 22px; height: 22px; display: grid; place-items: center; font-size: 13px;
+  background: rgba(255,255,255,.07); border-radius: 50%; flex: 0 0 auto;
+}
+.cuenta-nombre { max-width: 12ch; overflow: hidden; text-overflow: ellipsis; }
+.cuenta-flecha { font-size: 9px; opacity: .6; }
+.cuenta-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 200;
+  min-width: 178px; padding: 5px;
+  background: var(--surface, #16161a);
+  border: 1px solid var(--border, var(--glass-border, rgba(255,255,255,.1)));
+  border-radius: 11px; box-shadow: 0 14px 34px rgba(0,0,0,.55);
+  display: flex; flex-direction: column;
+}
+.cuenta-menu[hidden] { display: none; }
+.cuenta-menu a, .cuenta-menu button {
+  font: inherit; font-size: 13px; font-weight: 600; text-align: left; cursor: pointer;
+  color: var(--muted, var(--text-muted, #9a9aa3));
+  background: none; border: 0; border-radius: 7px; text-decoration: none;
+  padding: 9px 11px; white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.cuenta-menu a:hover, .cuenta-menu button:hover {
+  background: rgba(255,255,255,.06);
+  color: var(--text, var(--text-main, #f4f4f6));
+}
+.cuenta-menu .cuenta-salir:hover { color: #e57b63; }
+`;
+
+function ponerEstilos() {
+    if (document.getElementById('estilos-cuenta')) return;
+    const hoja = document.createElement('style');
+    hoja.id = 'estilos-cuenta';
+    hoja.textContent = ESTILOS;
+    document.head.append(hoja);
+}
+
+/**
  * Pinta el botón de cuenta dentro del elemento que se le pase.
  *
  * Se llama desde las tres webs, y cada una le da el hueco que quiera. Si hay
@@ -138,6 +203,8 @@ function traducir(msg) {
 export async function montarBoton(hueco, opciones = {}) {
     if (!hueco) return;
     const rutaPerfil = opciones.rutaPerfil || 'https://botizlab.github.io/cuenta/';
+
+    ponerEstilos();
 
     const p = await perfil();
     hueco.textContent = '';
@@ -181,6 +248,12 @@ export async function montarBoton(hueco, opciones = {}) {
     irPerfil.setAttribute('role', 'menuitem');
     irPerfil.textContent = 'Mi cuenta';
 
+    // El panel: la app en el navegador, con la misma cuenta
+    const irPanel = document.createElement('a');
+    irPanel.href = 'https://botizlab.github.io/gymspeak-panel/';
+    irPanel.setAttribute('role', 'menuitem');
+    irPanel.textContent = 'GymSpeak web';
+
     const cerrar = document.createElement('button');
     cerrar.type = 'button';
     cerrar.setAttribute('role', 'menuitem');
@@ -192,7 +265,7 @@ export async function montarBoton(hueco, opciones = {}) {
         location.reload();
     });
 
-    menu.append(irPerfil, cerrar);
+    menu.append(irPerfil, irPanel, cerrar);
     hueco.append(boton, menu);
 
     const abrirCerrar = (abrir) => {

@@ -219,8 +219,19 @@ main section { margin-bottom: 46px; }
 .formulario input:focus, .formulario textarea:focus {
   outline: none; border-color: var(--accent);
 }
-/* Solo se marca en rojo lo que el usuario ya ha tocado y ha dejado mal */
-.formulario input:not(:placeholder-shown):invalid { border-color: #d9614a; }
+/* El rojo lo pone el validador, no el navegador: así solo se marca lo que el
+   usuario ya ha dejado atrás, y nunca mientras teclea por primera vez. */
+.formulario input.malo, .formulario textarea.malo { border-color: #d9614a; }
+.formulario input.malo:focus, .formulario textarea.malo:focus { border-color: #e57b63; }
+
+.fallo { font-size: 12px; color: #e57b63; min-height: 0; }
+.fallo:empty { display: none; }
+
+.contador {
+  float: right; font-weight: 500; letter-spacing: 0; text-transform: none;
+  color: var(--faint); font-size: 10.5px;
+}
+.contador.apurado { color: #e57b63; }
 
 /* El cebo tiene que ser invisible para personas pero rellenable por un robot:
    nada de display:none, que muchos ya lo detectan. */

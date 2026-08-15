@@ -61,6 +61,73 @@ document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     aviso.className = 'aviso' + (clase ? ' ' + clase : '');
   };
 
+  // ── Validación campo a campo ──────────────────────────────────────────────
+  // Estas reglas son las MISMAS que las CHECK de la tabla. Si aquí se dejara
+  // pasar algo que allí se rechaza, el visitante escribiría el mensaje entero
+  // para que luego el servidor lo tirase con un error que no dice nada.
+  //   nombre  1..80   ·  email 5..120 y con forma de correo
+  //   asunto  2..140  ·  mensaje 10..2000
+  const CORREO = /^[^\s@]+@[^\s@.]+\.[^\s@]{2,}$/;
+
+  const REGLAS = {
+    nombre: (v) =>
+      !v ? 'Dime cómo te llamas.'
+      : v.length < 2 ? 'Con una sola letra no me vale.'
+      : v.length > 80 ? 'Máximo 80 caracteres.'
+      : null,
+    email: (v) =>
+      !v ? 'Sin tu correo no puedo contestarte.'
+      : !CORREO.test(v) ? 'Eso no parece un correo. Revisa la arroba y el punto.'
+      : v.length > 120 ? 'Máximo 120 caracteres.'
+      : null,
+    asunto: (v) =>
+      !v ? 'Ponle un asunto, aunque sea corto.'
+      : v.length < 2 ? 'Un poco más largo.'
+      : v.length > 140 ? 'Máximo 140 caracteres.'
+      : null,
+    mensaje: (v) =>
+      !v ? 'Escribe el mensaje.'
+      : v.length < 10 ? `Cuéntame algo más: faltan ${10 - v.length} caracteres.`
+      : v.length > 2000 ? 'Máximo 2000 caracteres.'
+      : null
+  };
+
+  const campo = (n) => form.elements[n];
+  const hueco = (n) => document.getElementById('e-' + n);
+
+  /** Devuelve true si el campo está bien. `pintar` decide si además se marca. */
+  function revisar(nombre, pintar = true) {
+    const el = campo(nombre);
+    const fallo = REGLAS[nombre](el.value.trim());
+    if (pintar) {
+      hueco(nombre).textContent = fallo || '';
+      el.classList.toggle('malo', !!fallo);
+      el.setAttribute('aria-invalid', fallo ? 'true' : 'false');
+    }
+    return !fallo;
+  }
+
+  for (const nombre of Object.keys(REGLAS)) {
+    const el = campo(nombre);
+    // Al salir del campo se revisa; mientras se escribe solo se corrige lo que
+    // ya estaba marcado, para no ir regañando letra a letra
+    el.addEventListener('blur', () => revisar(nombre));
+    el.addEventListener('input', () => {
+      if (el.classList.contains('malo')) revisar(nombre);
+    });
+  }
+
+  // Contador del mensaje: aparece cuando de verdad importa
+  const contador = document.getElementById('contador');
+  const texto = campo('mensaje');
+  const actualizarContador = () => {
+    const n = texto.value.trim().length;
+    contador.textContent = n === 0 ? '' : n < 10 ? `${n}/10 mínimo` : `${n}/2000`;
+    contador.classList.toggle('apurado', n > 1900);
+  };
+  texto.addEventListener('input', actualizarContador);
+  actualizarContador();
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const datos = Object.fromEntries(new FormData(form));
@@ -72,9 +139,12 @@ document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     // Nadie escribe un mensaje entero en tres segundos
     if (Date.now() - abierto < 3000) { decir('Tómate un segundo más y dale otra vez.', 'mal'); return; }
 
-    if (!form.checkValidity()) {
-      decir('Repasa los campos: faltan cosas o el correo no es válido.', 'mal');
-      form.reportValidity();
+    // Se revisan TODOS, no se para en el primero: así ves de golpe todo lo que
+    // hay que arreglar en vez de descubrirlo de uno en uno
+    const malos = Object.keys(REGLAS).filter((n) => !revisar(n));
+    if (malos.length) {
+      decir(malos.length === 1 ? 'Falta un campo por corregir.' : `Faltan ${malos.length} campos por corregir.`, 'mal');
+      campo(malos[0]).focus();
       return;
     }
 
@@ -101,6 +171,12 @@ document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
       if (res.ok) {
         decir('Mensaje enviado. Te contesto en cuanto lo lea.', 'ok');
         form.reset();
+        Object.keys(REGLAS).forEach((n) => {
+          hueco(n).textContent = '';
+          campo(n).classList.remove('malo');
+          campo(n).removeAttribute('aria-invalid');
+        });
+        actualizarContador();
         return;
       }
 

@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- El nombre no manda en la portada, pero sí tiene que poder encontrarse:
-       por eso vive en el título, la barra, el pie y el contacto. -->
-  <title>Apps y juegos — Carlos Botiz</title>
-  <meta name="description" content="Una app de gimnasio publicada en Google Play y un juego que se controla con la cámara moviendo el cuerpo. Diseñados, programados y publicados de principio a fin por Carlos Botiz." />
-  <meta property="og:title" content="Apps y juegos" />
+  <title>Proyectos — Carlos Botiz</title>
+  <meta name="description" content="Los proyectos de Carlos Botiz: una app de gimnasio publicada en Google Play y un juego que se controla con la cámara moviendo el cuerpo." />
+  <meta property="og:title" content="Proyectos de Carlos Botiz" />
   <meta property="og:description" content="Una app en Google Play y un juego que se juega moviendo el cuerpo. Hechos de principio a fin." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://botizlab.github.io/" />
@@ -17,104 +15,134 @@
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- Barra: monograma, el muñeco corriendo por el borde y los enlaces -->
   <nav class="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="/">Carlos <i>Botiz</i></a>
-      <button class="nav-toggle" aria-label="Abrir menú" id="navToggle">≡</button>
+    <div class="wrap nav-inner">
+      <a class="mono" href="/" aria-label="Inicio">N<i>C</i>B</a>
+
+      <svg class="runner" width="14" height="23" viewBox="0 0 14 23" aria-hidden="true">
+        <g stroke="#f4f4f6" stroke-width="1.9" stroke-linecap="round" fill="none">
+          <circle cx="7" cy="3.7" r="2.7" fill="#f4f4f6" stroke="none" />
+          <line x1="7" y1="6.6" x2="7" y2="13.4" />
+          <line class="arm-a" x1="7" y1="8.4" x2="11.2" y2="10.5" />
+          <line class="arm-b" x1="7" y1="8.4" x2="2.8" y2="10.5" />
+          <line class="leg-a" x1="7" y1="13.4" x2="10.5" y2="20" />
+          <line class="leg-b" x1="7" y1="13.4" x2="3.5" y2="20" />
+        </g>
+      </svg>
+
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menú" aria-expanded="false">≡</button>
       <div class="nav-links" id="navLinks">
-        <a href="#juegos">Juegos</a>
-        <a href="#apps">Apps</a>
+        <a href="#proyectos">Proyectos</a>
         <a href="#contacto">Contacto</a>
       </div>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <header class="hero">
-    <div class="container reveal">
-      <span class="tagline">Proyectos propios</span>
-      <h1>Apps y juegos</h1>
-      <p>Diseñados, programados y publicados de principio a fin. Esto es lo que hay funcionando ahora mismo.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="/juego/">Jugar ahora</a>
-        <a class="btn btn-ghost" href="#apps">Ver la app</a>
+  <main class="wrap">
+
+    <!-- Quién soy: breve, sin titulares gigantes -->
+    <section class="card intro reveal" aria-labelledby="quien">
+      <div class="avatar">
+        <!-- Si assets/yo.jpg existe se ve la foto; si no, se queda el muñeco -->
+        <img src="assets/yo.jpg" alt="Carlos Botiz" onerror="this.remove()" />
+        <svg viewBox="0 0 40 46" aria-hidden="true">
+          <g stroke="#5ad67d" stroke-width="3" stroke-linecap="round" fill="none">
+            <circle cx="20" cy="11" r="7" fill="#5ad67d" stroke="none" />
+            <line x1="20" y1="19" x2="20" y2="31" />
+            <line x1="20" y1="23" x2="29" y2="28" />
+            <line x1="20" y1="23" x2="11" y2="28" />
+            <line x1="20" y1="31" x2="27" y2="41" />
+            <line x1="20" y1="31" x2="13" y2="41" />
+          </g>
+        </svg>
       </div>
-    </div>
-  </header>
+      <div class="intro-text">
+        <h1 id="quien">Carlos Botiz</h1>
+        <p class="role">Desarrollo aplicaciones y juegos por mi cuenta</p>
+        <p>
+          Diseño, programo y publico: de la primera idea a la tienda. Ahora mismo hay una app de
+          entrenamiento en Google Play y un juego que se controla con la cámara, moviendo el cuerpo.
+          Aquí están.
+        </p>
+      </div>
+    </section>
 
-  <!-- Juegos primero: se prueba sin instalar nada, es el mejor gancho -->
-  <section class="section" id="juegos">
-    <div class="container">
-      <div class="section-title reveal">Para jugar ahora mismo</div>
+    <!-- Los proyectos, en bloques -->
+    <section id="proyectos">
+      <h2 class="label reveal">Proyectos</h2>
 
-      <div class="app wide reveal">
-        <div class="app-screen">
-          <div class="screen"><img src="assets/runner-cap.jpg" alt="Partida de GymSpeak Runner" loading="lazy" /></div>
-        </div>
-        <div class="app-info">
-          <div class="app-head">
-            <h2>GymSpeak Runner</h2>
+      <article class="card proyecto reveal">
+        <div class="thumb"><img src="assets/runner-cap.jpg" alt="Partida de GymSpeak Runner" loading="lazy" /></div>
+        <div class="proyecto-info">
+          <div class="proyecto-head">
+            <h3>GymSpeak Runner</h3>
+            <span class="tag tag-vivo">Se juega ya</span>
           </div>
-          <p class="desc">Un juego que se controla <strong>moviendo el cuerpo</strong>: saltas tú y salta el personaje, te agachas y se agacha. La cámara te lee dentro del propio navegador, así que el vídeo no sale de tu dispositivo. También se juega con el teclado.</p>
-          <div><span class="meta">En el navegador · sin instalar nada</span></div>
-          <div class="app-cta">
+          <p>
+            Un juego que se controla moviendo el cuerpo: saltas tú y salta el personaje. La cámara te
+            lee dentro del propio navegador, así que el vídeo no sale de tu dispositivo. También se
+            juega con el teclado.
+          </p>
+          <ul class="datos">
+            <li>Navegador</li>
+            <li>Sin instalar nada</li>
+            <li>Detección de pose</li>
+          </ul>
+          <div class="acciones">
             <a class="btn btn-primary" href="/juego/">Jugar</a>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </article>
 
-  <!-- Apps -->
-  <section class="section" id="apps">
-    <div class="container">
-      <div class="section-title reveal">Aplicaciones</div>
-
-      <div class="app reveal">
-        <div class="app-phone">
-          <div class="phone"><img src="assets/gymspeak-cap.jpeg" alt="GymSpeak" loading="lazy" /></div>
-        </div>
-        <div class="app-info">
-          <div class="app-head">
-            <img class="app-icon" src="assets/gymspeak-icon.png" alt="" />
-            <h2>GymSpeak</h2>
+      <article class="card proyecto reveal">
+        <div class="thumb thumb-app"><img src="assets/gymspeak-cap.jpeg" alt="GymSpeak" loading="lazy" /></div>
+        <div class="proyecto-info">
+          <div class="proyecto-head">
+            <img class="icono" src="assets/gymspeak-icon.png" alt="" />
+            <h3>GymSpeak</h3>
+            <span class="tag">Google Play</span>
           </div>
-          <p class="desc">Registra tus entrenamientos hablando. IA que entiende tus series, mide tu progreso y te guía.</p>
-          <div><span class="meta">Android</span></div>
-          <div class="app-cta">
-            <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app" target="_blank" rel="noopener">Google Play</a>
+          <p>
+            Registra tus entrenamientos hablando: terminas la serie, lo dices en voz alta y queda
+            guardado. Rutinas, progreso y amigos.
+          </p>
+          <ul class="datos">
+            <li>Android</li>
+            <li>Voz e IA</li>
+            <li>React Native</li>
+          </ul>
+          <div class="acciones">
+            <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app" target="_blank" rel="noopener">Descargar</a>
             <a class="btn btn-ghost" href="https://botizlab.github.io/gymspeak-web/" target="_blank" rel="noopener">Su web</a>
           </div>
         </div>
-      </div>
+      </article>
 
-      <div class="soon reveal">Más cosas en camino</div>
-    </div>
-  </section>
+      <p class="soon reveal">Hay más en camino</p>
+    </section>
 
-  <!-- Contacto + redes -->
-  <section class="section contact" id="contacto">
-    <div class="container reveal">
-      <div class="section-title">Contacto</div>
-      <h2>Hablemos</h2>
-      <div class="email-btn">
+    <!-- Contacto -->
+    <section id="contacto">
+      <h2 class="label reveal">Contacto</h2>
+      <div class="card contacto reveal">
+        <p>¿Te cuadra algo de esto? Escríbeme.</p>
         <a class="btn btn-primary" href="mailto:gymspeaksl@gmail.com">gymspeaksl@gmail.com</a>
+        <div class="redes">
+          <a href="https://www.linkedin.com/in/nicolas-carlos-botiz-77587438b/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://www.instagram.com/ncarlossb__/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.tiktok.com/@carlosbotissss" target="_blank" rel="noopener">TikTok</a>
+          <a href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub</a>
+        </div>
       </div>
-      <div class="socials">
-        <a class="chip" href="https://www.linkedin.com/in/nicolas-carlos-botiz-77587438b/" target="_blank" rel="noopener">LinkedIn</a>
-        <a class="chip" href="https://www.instagram.com/ncarlossb__/" target="_blank" rel="noopener">Instagram</a>
-        <a class="chip" href="https://www.tiktok.com/@carlosbotissss" target="_blank" rel="noopener">TikTok</a>
-        <a class="chip" href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub</a>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
+  </main>
+
   <footer>
-    <div class="container footer-inner">
+    <div class="wrap footer-inner">
       <span>© <span id="year"></span> Carlos Botiz</span>
-      <b>BotizLab</b>
+      <span class="sello">BotizLab</span>
     </div>
   </footer>
 

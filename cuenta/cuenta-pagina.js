@@ -7,8 +7,8 @@
 
 import {
     sesion, entrar, registrar, salir, recuperar,
-    perfil, guardarPerfil, comoTeLlamas
-} from '../js/cuenta.js?v=10';
+    perfil, guardarPerfil, comoTeLlamas, confirmar
+} from '../js/cuenta.js?v=11';
 
 const $ = (id) => document.getElementById(id);
 const EMOJIS = ['💪', '🏋️', '🔥', '⚡', '🏃', '🥇', '🧠', '🦍', '🐺', '🚀', '🎯', '🥋'];
@@ -258,28 +258,15 @@ $('formPerfil').addEventListener('submit', async (e) => {
     }
 });
 
-// Igual que en el desplegable: el primer clic pregunta, el segundo sale
-let confirmandoSalida = false;
-let vueltaSalida = null;
+// El mismo cuadro que el desplegable: se pregunta igual en toda la web
 $('btnSalir').addEventListener('click', async () => {
+    if (!(await confirmar('¿Seguro que quieres cerrar sesión?'))) return;
     const b = $('btnSalir');
-    if (!confirmandoSalida) {
-        confirmandoSalida = true;
-        b.textContent = '¿Seguro?';
-        b.classList.add('peligro');
-        // Si se lo piensa y no vuelve, el botón se rinde solo
-        vueltaSalida = setTimeout(() => {
-            confirmandoSalida = false;
-            b.textContent = 'Salir';
-            b.classList.remove('peligro');
-        }, 4000);
-        return;
-    }
-    clearTimeout(vueltaSalida);
-    confirmandoSalida = false;
-    b.textContent = 'Salir';
-    b.classList.remove('peligro');
+    b.disabled = true;
+    b.textContent = 'Saliendo…';
     await salir();
+    b.disabled = false;
+    b.textContent = 'Cerrar sesión';
     await pintarSegunSesion();
 });
 

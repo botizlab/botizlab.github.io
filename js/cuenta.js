@@ -126,6 +126,52 @@ function traducir(msg) {
     return 'No se ha podido completar. Inténtalo de nuevo.';
 }
 
+// ═══════════════════════════ Confirmar ═══════════════════════════
+
+/**
+ * Pregunta con un cuadro en mitad de la pantalla. Devuelve true o false.
+ *
+ * Vive aquí porque lo usan el desplegable y la página de cuenta, y antes cada
+ * uno confirmaba a su manera: uno con un modal y otro cambiando el texto del
+ * propio botón. Dos formas de preguntar lo mismo en la misma web confunden.
+ */
+export function confirmar(titulo, textoSi = 'Sí, cerrar sesión') {
+    ponerEstilos();
+    return new Promise((resolver) => {
+        const fondo = document.createElement('div');
+        fondo.className = 'cuenta-fondo';
+        fondo.innerHTML = `
+            <div class="cuenta-dialogo" role="dialog" aria-modal="true" aria-labelledby="dlg-t">
+              <h3 id="dlg-t"></h3>
+              <div class="cuenta-dialogo-botones">
+                <button type="button" class="dlg-no">Cancelar</button>
+                <button type="button" class="dlg-si"></button>
+              </div>
+            </div>`;
+        fondo.querySelector('h3').textContent = titulo;
+        fondo.querySelector('.dlg-si').textContent = textoSi;
+        document.body.append(fondo);
+
+        const antes = document.activeElement;
+        const cerrar = (respuesta) => {
+            document.removeEventListener('keydown', teclas);
+            fondo.remove();
+            antes?.focus?.();
+            resolver(respuesta);
+        };
+        const teclas = (e) => {
+            if (e.key === 'Escape') { e.preventDefault(); cerrar(false); }
+        };
+        document.addEventListener('keydown', teclas);
+        // Clic fuera = cancelar. Nunca confirmar sin querer.
+        fondo.addEventListener('click', (e) => { if (e.target === fondo) cerrar(false); });
+        fondo.querySelector('.dlg-no').addEventListener('click', () => cerrar(false));
+        fondo.querySelector('.dlg-si').addEventListener('click', () => cerrar(true));
+        // El foco arranca en Cancelar: si le das a Enter sin mirar, no sales
+        setTimeout(() => fondo.querySelector('.dlg-no').focus(), 20);
+    });
+}
+
 // ═══════════════════════════ El botón de la barra ═══════════════════════════
 
 /**
@@ -183,10 +229,40 @@ const ESTILOS = `
   color: var(--text, var(--text-main, #f4f4f6));
 }
 .cuenta-menu .cuenta-salir:hover { color: #e57b63; }
-.cuenta-menu .cuenta-salir.confirmando {
-  color: #e57b63; background: rgba(229,123,99,.12); font-weight: 700;
-}
 .cuenta-menu .cuenta-salir:disabled { opacity: .6; cursor: default; }
+
+/* El cuadro de confirmar, en mitad de la pantalla */
+.cuenta-fondo {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,.62); backdrop-filter: blur(2px);
+  display: grid; place-items: center; padding: 24px;
+}
+.cuenta-dialogo {
+  width: 100%; max-width: 380px; padding: 26px;
+  background: var(--surface, #16161a);
+  border: 1px solid var(--border, var(--glass-border, rgba(255,255,255,.1)));
+  border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,.6);
+  font-family: inherit;
+}
+.cuenta-dialogo h3 {
+  font-size: 17px; font-weight: 800; margin: 0 0 20px;
+  color: var(--text, var(--text-main, #f4f4f6)); line-height: 1.35;
+}
+.cuenta-dialogo-botones { display: flex; gap: 10px; flex-wrap: wrap; }
+.cuenta-dialogo-botones button {
+  flex: 1; min-width: 130px; font: inherit; font-size: 14px; font-weight: 700;
+  padding: 11px 16px; border-radius: 10px; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.cuenta-dialogo .dlg-no {
+  background: none; color: var(--muted, var(--text-muted, #9a9aa3));
+  border: 1px solid var(--border, var(--glass-border, rgba(255,255,255,.1)));
+}
+.cuenta-dialogo .dlg-no:hover { color: var(--text, #f4f4f6); border-color: currentColor; }
+.cuenta-dialogo .dlg-si {
+  background: #e0573c; color: #fff; border: 1px solid transparent;
+}
+.cuenta-dialogo .dlg-si:hover { background: #cf4c33; }
 `;
 
 function ponerEstilos() {
@@ -269,24 +345,8 @@ export async function montarBoton(hueco, opciones = {}) {
     cerrar.setAttribute('role', 'menuitem');
     cerrar.className = 'cuenta-salir';
     cerrar.textContent = 'Cerrar sesión';
-    // Dos pasos, en el mismo botón: el primer clic pregunta y el segundo hace.
-    // Sin diálogo aparte, que para esto sobra, pero sin salirse de un roce.
-    let confirmando = false;
-    let vuelta = null;
     cerrar.addEventListener('click', async () => {
-        if (!confirmando) {
-            confirmando = true;
-            cerrar.textContent = '¿Seguro? Pulsa otra vez';
-            cerrar.classList.add('confirmando');
-            // Si se lo piensa y no vuelve, el botón se rinde solo
-            vuelta = setTimeout(() => {
-                confirmando = false;
-                cerrar.textContent = 'Cerrar sesión';
-                cerrar.classList.remove('confirmando');
-            }, 4000);
-            return;
-        }
-        clearTimeout(vuelta);
+        if (!(await confirmar('¿Seguro que quieres cerrar sesión?'))) return;
         cerrar.disabled = true;
         cerrar.textContent = 'Saliendo…';
         await salir();

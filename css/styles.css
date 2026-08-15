@@ -130,12 +130,6 @@ main section { margin-bottom: 46px; }
 .proyecto-head h3 { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
 .proyecto-head .icono { width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--border); }
 
-.tag {
-  font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 3px 9px;
-}
-.tag-vivo { color: var(--accent); border-color: rgba(90, 214, 125, .35); }
-
 .proyecto p { color: var(--muted); margin: 10px 0 0; font-size: 14.5px; }
 
 .datos { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
@@ -146,11 +140,6 @@ main section { margin-bottom: 46px; }
 }
 
 .acciones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
-
-.soon {
-  border: 1px dashed var(--border); border-radius: 14px; padding: 16px;
-  color: var(--faint); font-size: 13.5px; text-align: center;
-}
 
 /* ─── Botones ────────────────────────────────────────────── */
 .btn {

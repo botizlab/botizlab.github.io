@@ -39,12 +39,15 @@
     </div>
   </nav>
 
-  <!-- Dos columnas: tú te quedas fijo a la izquierda, los proyectos pasan por
-       la derecha. Así el ancho se llena con contenido, no con relleno. -->
-  <main class="wrap doble">
+  <!-- Los márgenes son la cinta del juego: travesaños que bajan al hacer scroll -->
+  <div class="lados" aria-hidden="true">
+    <div class="lado lado-izq"><span class="cinta"></span></div>
+    <div class="lado lado-der"><span class="cinta"></span></div>
+  </div>
+
+  <main class="wrap">
 
     <!-- Quién soy: breve, sin titulares gigantes -->
-    <aside class="perfil">
     <section class="card intro reveal" aria-labelledby="quien">
       <div class="avatar">
         <!-- Si assets/yo.jpg existe se ve la foto; si no, se queda el muñeco -->
@@ -70,21 +73,6 @@
         </p>
       </div>
     </section>
-
-      <!-- El contacto va con la identidad, no al final del todo -->
-      <section id="contacto" class="reveal">
-        <h2 class="label">Contacto</h2>
-        <div class="card contacto">
-          <a class="btn btn-primary" href="mailto:gymspeaksl@gmail.com">gymspeaksl@gmail.com</a>
-          <div class="redes">
-            <a href="https://www.linkedin.com/in/nicolas-carlos-botiz-77587438b/" target="_blank" rel="noopener">LinkedIn</a>
-            <a href="https://www.instagram.com/ncarlossb__/" target="_blank" rel="noopener">Instagram</a>
-            <a href="https://www.tiktok.com/@carlosbotissss" target="_blank" rel="noopener">TikTok</a>
-            <a href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub</a>
-          </div>
-        </div>
-      </section>
-    </aside>
 
     <!-- Los proyectos, en bloques -->
     <section id="proyectos">
@@ -139,6 +127,21 @@
         </div>
       </article>
 
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto">
+      <h2 class="label reveal">Contacto</h2>
+      <div class="card contacto reveal">
+        <p>¿Te cuadra algo de esto? Escríbeme.</p>
+        <a class="btn btn-primary" href="mailto:gymspeaksl@gmail.com">gymspeaksl@gmail.com</a>
+        <div class="redes">
+          <a href="https://www.linkedin.com/in/nicolas-carlos-botiz-77587438b/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://www.instagram.com/ncarlossb__/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.tiktok.com/@carlosbotissss" target="_blank" rel="noopener">TikTok</a>
+          <a href="https://github.com/botizlab" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
     </section>
 
   </main>

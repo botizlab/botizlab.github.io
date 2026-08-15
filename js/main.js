@@ -35,6 +35,33 @@ const observer = new IntersectionObserver(
 document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
 /**
+ * Los márgenes son la cinta: los travesaños bajan hacia ti según haces scroll.
+ *
+ * Se desplaza solo dentro de un periodo del patrón (44 px) y se repite: así el
+ * número no crece sin fin y el movimiento se ve continuo igual.
+ */
+(() => {
+  const cintas = document.querySelectorAll('.cinta');
+  if (!cintas.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const PASO = 44;
+  let pedido = false;
+
+  const mover = () => {
+    const y = ((window.scrollY * 0.55) % PASO).toFixed(2);
+    cintas.forEach((c) => { c.style.transform = `translateY(${y}px)`; });
+    pedido = false;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (pedido) return;
+    pedido = true;
+    requestAnimationFrame(mover);
+  }, { passive: true });
+})();
+
+/**
  * El muñeco cruza la barra y salta los enlaces.
  *
  * Dos detalles que se ven raros si no se cuidan: el arco del salto tiene que

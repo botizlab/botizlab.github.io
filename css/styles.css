@@ -15,9 +15,10 @@
   --accent: #5ad67d;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  --maxw: 1140px;
+  /* Columna estrecha: es una ficha, no un cartel */
+  --maxw: 760px;
   --nav-h: 58px;
-  --media: 570px;   /* la mitad de --maxw, para las líneas de los márgenes */
+  --media: 380px;   /* la mitad de --maxw, para colocar los márgenes */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,19 +37,39 @@ body::before {
   background: radial-gradient(620px 380px at 72% -12%, rgba(90, 214, 125, .055), transparent 70%);
 }
 
-/* Dos hairlines en los bordes de la columna. El hueco de los lados deja de
-   parecer sitio que sobra y pasa a leerse como margen: es una decisión, no un
-   descuido. */
-body::after {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    linear-gradient(var(--border), var(--border)) calc(50% - var(--media)) 0 / 1px 100% no-repeat,
-    linear-gradient(var(--border), var(--border)) calc(50% + var(--media)) 0 / 1px 100% no-repeat;
-  opacity: .55;
+/* ─── Los márgenes son la cinta ──────────────────────────────
+   El hueco de los lados se convierte en la pista del juego: dos bandas de
+   travesaños que bajan hacia ti según haces scroll, como la cinta de correr.
+   Muy tenues a propósito: acompañan, no compiten con el contenido. */
+.lados { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+/* Ocupan el margen entero, de la columna al borde de la pantalla: si no,
+   queda otro hueco muerto por fuera de la banda. */
+.lado { position: absolute; top: 0; bottom: 0; overflow: hidden; }
+.lado-izq { left: 0; right: calc(50% + var(--media)); }
+.lado-der { left: calc(50% + var(--media)); right: 0; }
+
+/* Los raíles que encierran la banda */
+.lado::before, .lado::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(transparent, rgba(90, 214, 125, .16) 14%, rgba(90, 214, 125, .16) 86%, transparent);
 }
-/* Cuando la ventana es más estrecha que la columna, las líneas caerían encima
-   del contenido */
-@media (max-width: 1180px) { body::after { display: none; } }
+.lado::before { left: 0; }
+.lado::after { right: 0; }
+
+/* Los travesaños. Se pintan de sobra por arriba y por abajo para que al
+   desplazarlos no aparezca un borde vacío. */
+.cinta {
+  position: absolute; left: 0; right: 0; top: -60px; bottom: -60px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(244, 244, 246, .05) 0 1px,
+    transparent 1px 44px
+  );
+  will-change: transform;
+}
+
+/* Por debajo de esto el margen es demasiado fino para que se lea */
+@media (max-width: 940px) { .lados { display: none; } }
 
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; }
@@ -100,15 +121,9 @@ img { max-width: 100%; }
 main { padding: 42px 0 20px; }
 main section { margin-bottom: 46px; }
 
-/* Dos columnas: identidad fija a la izquierda, proyectos pasando a la derecha */
-.doble { display: grid; grid-template-columns: 340px 1fr; gap: 52px; align-items: start; }
-.perfil { position: sticky; top: calc(var(--nav-h) + 42px); }
-.perfil section:last-child { margin-bottom: 0; }
-.perfil .intro { margin-bottom: 26px; }
 
 /* ─── Quién soy ──────────────────────────────────────────── */
-/* En la columna estrecha el avatar va encima del texto, no al lado */
-.intro { display: flex; flex-direction: column; gap: 18px; }
+.intro { display: grid; grid-template-columns: 84px 1fr; gap: 22px; align-items: start; }
 .avatar {
   position: relative; width: 84px; height: 84px; border-radius: 14px; overflow: hidden;
   border: 1px solid var(--border); background: var(--surface-2);
@@ -202,15 +217,8 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 20px;
 
 /* ─── Estrecho ───────────────────────────────────────────── */
 
-/* Ya no caben dos columnas: la identidad se pone arriba y deja de ir fija */
-@media (max-width: 900px) {
-  .doble { grid-template-columns: 1fr; gap: 0; }
-  .perfil { position: static; }
-  .perfil .intro { flex-direction: row; align-items: flex-start; gap: 20px; }
-  .perfil section:last-child { margin-bottom: 46px; }
-}
-
 @media (max-width: 620px) {
+  .intro { grid-template-columns: 64px 1fr; gap: 16px; }
   .avatar { width: 64px; height: 64px; }
   .avatar svg { width: 30px; height: 35px; }
 

@@ -197,8 +197,48 @@ main section { margin-bottom: 46px; }
 .btn-ghost:hover { transform: translateY(-2px); border-color: var(--accent); }
 
 /* ─── Contacto ───────────────────────────────────────────── */
-.contacto { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
-.contacto p { color: var(--muted); }
+.contacto { display: flex; flex-direction: column; align-items: stretch; gap: 16px; }
+.contacto > p { color: var(--muted); }
+
+.formulario { display: flex; flex-direction: column; gap: 12px; }
+.campos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.formulario label { display: flex; flex-direction: column; gap: 6px; }
+.formulario label > span {
+  font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--faint);
+}
+.formulario input, .formulario textarea {
+  font: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+  padding: 10px 12px; width: 100%;
+  transition: border-color .18s;
+}
+.formulario textarea { resize: vertical; min-height: 96px; }
+.formulario input:hover, .formulario textarea:hover { border-color: #34343c; }
+.formulario input:focus, .formulario textarea:focus {
+  outline: none; border-color: var(--accent);
+}
+/* Solo se marca en rojo lo que el usuario ya ha tocado y ha dejado mal */
+.formulario input:not(:placeholder-shown):invalid { border-color: #d9614a; }
+
+/* El cebo tiene que ser invisible para personas pero rellenable por un robot:
+   nada de display:none, que muchos ya lo detectan. */
+.cebo {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+.envio { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 2px; }
+.envio .btn:disabled { opacity: .55; cursor: default; transform: none; box-shadow: none; }
+
+.aviso { font-size: 13px; margin: 0; min-height: 1.2em; }
+.aviso.ok { color: var(--accent); }
+.aviso.mal { color: #e57b63; }
+
+.alterna { font-size: 13px; color: var(--faint); }
+.alterna a { color: var(--muted); border-bottom: 1px solid var(--border); }
+.alterna a:hover { color: var(--accent); border-color: var(--accent); }
 .redes { display: flex; gap: 18px; flex-wrap: wrap; }
 .redes a { font-size: 13.5px; font-weight: 600; color: var(--muted); transition: color .15s; }
 .redes a:hover { color: var(--accent); }
@@ -218,6 +258,7 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 20px;
 /* ─── Estrecho ───────────────────────────────────────────── */
 
 @media (max-width: 620px) {
+  .campos { grid-template-columns: 1fr; }
   .intro { grid-template-columns: 64px 1fr; gap: 16px; }
   .avatar { width: 64px; height: 64px; }
   .avatar svg { width: 30px; height: 35px; }

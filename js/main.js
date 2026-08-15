@@ -35,6 +35,93 @@ const observer = new IntersectionObserver(
 document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 
 /**
+ * Formulario de contacto.
+ *
+ * No hay servidor: el mensaje se inserta directamente en una tabla de Supabase
+ * que solo acepta INSERT. Nadie puede leer los mensajes con esta clave, porque
+ * la tabla no tiene política de SELECT y RLS deniega por defecto.
+ *
+ * La clave anónima es pública POR DISEÑO —ya viaja dentro del APK de Google
+ * Play—. Lo que protege los datos no es esconderla, son las políticas de
+ * Supabase.
+ */
+(() => {
+  const SUPABASE_URL = 'https://datuqilcshjvapujdool.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdHVxaWxjc2hqdmFwdWpkb29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDgxMzIsImV4cCI6MjA5NDYyNDEzMn0.q6AZirRR1UsKKdkxvnmlmPDVQx09T-FckLl03aRh5Gw';
+
+  const form = document.getElementById('formContacto');
+  const aviso = document.getElementById('avisoContacto');
+  if (!form || !aviso) return;
+
+  const boton = form.querySelector('button[type="submit"]');
+  const abierto = Date.now();
+
+  const decir = (texto, clase) => {
+    aviso.textContent = texto;
+    aviso.className = 'aviso' + (clase ? ' ' + clase : '');
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(form));
+
+    // Un robot rellena todos los campos, incluido el que no se ve. Fingimos
+    // que ha ido bien: si le decimos que ha fallado, lo reintenta.
+    if (datos.web) { decir('Mensaje enviado. Te contesto en cuanto lo lea.', 'ok'); form.reset(); return; }
+
+    // Nadie escribe un mensaje entero en tres segundos
+    if (Date.now() - abierto < 3000) { decir('Tómate un segundo más y dale otra vez.', 'mal'); return; }
+
+    if (!form.checkValidity()) {
+      decir('Repasa los campos: faltan cosas o el correo no es válido.', 'mal');
+      form.reportValidity();
+      return;
+    }
+
+    boton.disabled = true;
+    decir('Enviando…');
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/mensajes_web`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON,
+          Authorization: `Bearer ${SUPABASE_ANON}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({
+          nombre: datos.nombre.trim(),
+          email: datos.email.trim(),
+          asunto: datos.asunto.trim(),
+          mensaje: datos.mensaje.trim()
+        })
+      });
+
+      if (res.ok) {
+        decir('Mensaje enviado. Te contesto en cuanto lo lea.', 'ok');
+        form.reset();
+        return;
+      }
+
+      // Si algo se rechaza, que el aviso diga qué hacer, no un código
+      const cuerpo = await res.text();
+      if (res.status === 429 || /Demasiados mensajes/i.test(cuerpo)) {
+        decir('Ahora mismo no puedo aceptar más mensajes. Prueba dentro de un rato.', 'mal');
+      } else if (/check constraint|violates/i.test(cuerpo)) {
+        decir('Algún campo se pasa de largo o el correo no es válido.', 'mal');
+      } else {
+        decir('No se ha podido enviar. Escríbeme al correo de abajo.', 'mal');
+      }
+    } catch {
+      decir('No hay conexión con el servidor. Escríbeme al correo de abajo.', 'mal');
+    } finally {
+      boton.disabled = false;
+    }
+  });
+})();
+
+/**
  * Los márgenes son la cinta: los travesaños bajan hacia ti según haces scroll.
  *
  * Se desplaza solo dentro de un periodo del patrón (44 px) y se repite: así el

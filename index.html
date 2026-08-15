@@ -11,7 +11,7 @@
   <meta property="og:url" content="https://botizlab.github.io/" />
   <meta name="theme-color" content="#09090b" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=3" />
 </head>
 <body>
 
@@ -134,7 +134,44 @@
       <h2 class="label reveal">Contacto</h2>
       <div class="card contacto reveal">
         <p>¿Te cuadra algo de esto? Escríbeme.</p>
-        <a class="btn btn-primary" href="mailto:gymspeaksl@gmail.com">gymspeaksl@gmail.com</a>
+
+        <!-- El `onsubmit` de aquí es una red de seguridad, no el manejador: va en
+             el propio HTML, así que existe aunque el JS no cargue o el navegador
+             sirva una versión vieja de caché. Sin él, un envío nativo mandaría el
+             nombre, el correo y el mensaje a la barra de direcciones. -->
+        <form class="formulario" id="formContacto" novalidate onsubmit="return false">
+          <div class="campos">
+            <label>
+              <span>Nombre</span>
+              <input type="text" name="nombre" maxlength="80" required autocomplete="name" />
+            </label>
+            <label>
+              <span>Tu correo</span>
+              <input type="email" name="email" maxlength="120" required autocomplete="email" />
+            </label>
+          </div>
+          <label>
+            <span>Asunto</span>
+            <input type="text" name="asunto" maxlength="140" required />
+          </label>
+          <label>
+            <span>Mensaje</span>
+            <textarea name="mensaje" rows="5" maxlength="2000" required></textarea>
+          </label>
+
+          <!-- Cebo para robots: está oculto, una persona nunca lo rellena -->
+          <div class="cebo" aria-hidden="true">
+            <label>No rellenes esto <input type="text" name="web" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <div class="envio">
+            <button class="btn btn-primary" type="submit">Enviar</button>
+            <p class="aviso" id="avisoContacto" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+
+        <p class="alterna">O escríbeme directo a <a href="mailto:gymspeaksl@gmail.com">gymspeaksl@gmail.com</a></p>
+
         <div class="redes">
           <a href="https://www.linkedin.com/in/nicolas-carlos-botiz-77587438b/" target="_blank" rel="noopener">LinkedIn</a>
           <a href="https://www.instagram.com/ncarlossb__/" target="_blank" rel="noopener">Instagram</a>
@@ -153,6 +190,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=3"></script>
 </body>
 </html>

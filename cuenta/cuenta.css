@@ -36,6 +36,14 @@ main.estrecho { padding-top: 40px; }
 #formAcceso input.malo, #formPerfil input.malo { border-color: #d9614a; }
 #formAcceso input::placeholder, #formPerfil input::placeholder { color: var(--faint); }
 
+/* El botón manda y va centrado; el enlace de la contraseña, debajo y en
+   pequeño, que es una salida de emergencia y no la acción principal. */
+#formAcceso .envio {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  margin-top: 6px;
+}
+#formAcceso .envio .btn { min-width: 180px; justify-content: center; }
+
 .btn-texto {
   font: inherit; font-size: 12.5px; background: none; border: 0; cursor: pointer;
   color: var(--muted); text-decoration: underline; text-underline-offset: 3px; padding: 0;
@@ -43,9 +51,32 @@ main.estrecho { padding-top: 40px; }
 .btn-texto:hover { color: var(--accent); }
 .btn-texto[hidden] { display: none; }
 
-.legal { font-size: 11.5px; color: var(--faint); margin-top: 16px; }
-.legal a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
-.legal a:hover { color: var(--accent); }
+/* ─── Aceptar términos ──────────────────────────────────── */
+.acepto { margin-top: 4px; }
+.casilla {
+  display: flex; flex-direction: row; align-items: flex-start; gap: 10px;
+  cursor: pointer;
+}
+.casilla input[type="checkbox"] {
+  width: 17px; height: 17px; flex: 0 0 auto; margin-top: 2px;
+  accent-color: var(--accent); cursor: pointer;
+}
+.casilla-txt {
+  font-size: 12.5px; line-height: 1.5; color: var(--muted);
+  /* Gana a la regla de las etiquetas del formulario, que van en versalitas */
+  font-weight: 400; letter-spacing: 0; text-transform: none;
+}
+.casilla-txt a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.casilla-txt a:hover { color: var(--accent); }
+.acepto.malo .casilla input { outline: 2px solid #d9614a; outline-offset: 2px; }
+
+/* ─── Cambiar de entrar a crear cuenta ──────────────────── */
+.cambiar-modo {
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+  text-align: center; font-size: 12.5px; color: var(--faint);
+}
+.cambiar-modo .btn-texto { font-size: 12.5px; margin-left: 4px; color: var(--accent); }
+.cambiar-modo .btn-texto:hover { color: var(--text); }
 
 /* ─── La ficha del perfil ───────────────────────────────── */
 .ficha-cab { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
@@ -98,4 +129,11 @@ main.estrecho { padding-top: 40px; }
 @media (max-width: 520px) {
   .datos-cuenta > div { grid-template-columns: 1fr; gap: 2px; }
   .ficha-cab .btn { margin-left: 0; }
+}
+
+/* Salir en dos pasos: el segundo clic va en rojo, para que no se confunda
+   con cualquier otro botón */
+.btn.peligro {
+  color: #e57b63; border-color: rgba(229, 123, 99, .45);
+  background: rgba(229, 123, 99, .1);
 }

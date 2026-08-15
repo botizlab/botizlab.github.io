@@ -8,7 +8,7 @@
 import {
     sesion, entrar, registrar, salir, recuperar,
     perfil, guardarPerfil, comoTeLlamas
-} from '../js/cuenta.js?v=7';
+} from '../js/cuenta.js?v=9';
 
 const $ = (id) => document.getElementById(id);
 
@@ -52,20 +52,35 @@ function revisar(el, idHueco, regla) {
 
 const formAcceso = $('formAcceso');
 
+/** Deja la pantalla en el modo actual. Un solo sitio decide qué se ve. */
+function aplicarModo() {
+    const registro = modo === 'registro';
+    document.querySelectorAll('.solo-registro').forEach((el) => { el.hidden = !registro; });
+    $('btnAcceso').textContent = registro ? 'Crear cuenta' : 'Entrar';
+    $('btnOlvide').hidden = registro;
+    $('explica').textContent = registro
+        ? 'Crea una cuenta para BotizLab.'
+        : 'Si ya tienes cuenta de BotizLab, inicia sesión.';
+    $('cambiarTexto').textContent = registro ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?';
+    $('btnCambiar').textContent = registro ? 'Iniciar sesión' : 'Crear una';
+    formAcceso.elements.clave.setAttribute('autocomplete', registro ? 'new-password' : 'current-password');
+    document.querySelectorAll('[data-modo]').forEach((o) =>
+        o.setAttribute('aria-selected', String(o.dataset.modo === modo)));
+    decir($('avisoAcceso'), '');
+}
+
+/** El enlace de abajo hace lo mismo que las pestañas. */
+$('btnCambiar').addEventListener('click', () => {
+    modo = modo === 'registro' ? 'entrar' : 'registro';
+    aplicarModo();
+});
+
 document.querySelectorAll('[data-modo]').forEach((b) => {
     b.addEventListener('click', () => {
         modo = b.dataset.modo;
         document.querySelectorAll('[data-modo]').forEach((o) =>
             o.setAttribute('aria-selected', String(o === b)));
-        const registro = modo === 'registro';
-        document.querySelector('.solo-registro').hidden = !registro;
-        $('btnAcceso').textContent = registro ? 'Crear cuenta' : 'Entrar';
-        $('btnOlvide').hidden = registro;
-        $('explica').textContent = registro
-            ? 'Con esta cuenta entras también en la app del móvil y en el juego. Es una sola.'
-            : 'Es la misma cuenta de la app de GymSpeak. Si ya la tienes, entra con ella.';
-        formAcceso.elements.clave.setAttribute('autocomplete', registro ? 'new-password' : 'current-password');
-        decir($('avisoAcceso'), '');
+        aplicarModo();
     });
 });
 
@@ -85,6 +100,16 @@ formAcceso.addEventListener('submit', async (e) => {
     if (aCorregir.length) {
         decir($('avisoAcceso'), 'Repasa lo marcado.', 'mal');
         formAcceso.elements[aCorregir[0]].focus();
+        return;
+    }
+
+    // Sin aceptar los términos no se crea la cuenta. Se comprueba aquí y no
+    // con `required` en el HTML porque el formulario lleva `novalidate`.
+    if (modo === 'registro' && !formAcceso.elements.acepto.checked) {
+        $('e-acepto').textContent = 'Tienes que aceptar los términos para crear la cuenta.';
+        document.querySelector('.acepto').classList.add('malo');
+        decir($('avisoAcceso'), 'Falta aceptar los términos.', 'mal');
+        formAcceso.elements.acepto.focus();
         return;
     }
 
@@ -116,6 +141,12 @@ formAcceso.addEventListener('submit', async (e) => {
     } finally {
         boton.disabled = false;
     }
+});
+
+formAcceso.elements.acepto?.addEventListener('change', (ev) => {
+    if (!ev.target.checked) return;
+    $('e-acepto').textContent = '';
+    document.querySelector('.acepto').classList.remove('malo');
 });
 
 $('btnOlvide').addEventListener('click', async () => {
@@ -170,7 +201,27 @@ $('formPerfil').addEventListener('submit', async (e) => {
     }
 });
 
+// Igual que en el desplegable: el primer clic pregunta, el segundo sale
+let confirmandoSalida = false;
+let vueltaSalida = null;
 $('btnSalir').addEventListener('click', async () => {
+    const b = $('btnSalir');
+    if (!confirmandoSalida) {
+        confirmandoSalida = true;
+        b.textContent = '¿Seguro?';
+        b.classList.add('peligro');
+        // Si se lo piensa y no vuelve, el botón se rinde solo
+        vueltaSalida = setTimeout(() => {
+            confirmandoSalida = false;
+            b.textContent = 'Salir';
+            b.classList.remove('peligro');
+        }, 4000);
+        return;
+    }
+    clearTimeout(vueltaSalida);
+    confirmandoSalida = false;
+    b.textContent = 'Salir';
+    b.classList.remove('peligro');
     await salir();
     await pintarSegunSesion();
 });

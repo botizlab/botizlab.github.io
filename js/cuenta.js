@@ -183,6 +183,10 @@ const ESTILOS = `
   color: var(--text, var(--text-main, #f4f4f6));
 }
 .cuenta-menu .cuenta-salir:hover { color: #e57b63; }
+.cuenta-menu .cuenta-salir.confirmando {
+  color: #e57b63; background: rgba(229,123,99,.12); font-weight: 700;
+}
+.cuenta-menu .cuenta-salir:disabled { opacity: .6; cursor: default; }
 `;
 
 function ponerEstilos() {
@@ -259,8 +263,26 @@ export async function montarBoton(hueco, opciones = {}) {
     cerrar.setAttribute('role', 'menuitem');
     cerrar.className = 'cuenta-salir';
     cerrar.textContent = 'Cerrar sesión';
+    // Dos pasos, en el mismo botón: el primer clic pregunta y el segundo hace.
+    // Sin diálogo aparte, que para esto sobra, pero sin salirse de un roce.
+    let confirmando = false;
+    let vuelta = null;
     cerrar.addEventListener('click', async () => {
+        if (!confirmando) {
+            confirmando = true;
+            cerrar.textContent = '¿Seguro? Pulsa otra vez';
+            cerrar.classList.add('confirmando');
+            // Si se lo piensa y no vuelve, el botón se rinde solo
+            vuelta = setTimeout(() => {
+                confirmando = false;
+                cerrar.textContent = 'Cerrar sesión';
+                cerrar.classList.remove('confirmando');
+            }, 4000);
+            return;
+        }
+        clearTimeout(vuelta);
         cerrar.disabled = true;
+        cerrar.textContent = 'Saliendo…';
         await salir();
         location.reload();
     });

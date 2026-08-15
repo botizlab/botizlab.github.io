@@ -7,8 +7,8 @@
   <meta name="description" content="Tu cuenta de GymSpeak: la misma para la app, el juego y la web." />
   <meta name="theme-color" content="#09090b" />
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="../css/styles.css?v=7" />
-  <link rel="stylesheet" href="cuenta.css?v=7" />
+  <link rel="stylesheet" href="../css/styles.css?v=9" />
+  <link rel="stylesheet" href="cuenta.css?v=9" />
 </head>
 <body>
 
@@ -35,23 +35,23 @@
       </div>
 
       <p class="explica" id="explica">
-        Es la misma cuenta de la app de GymSpeak. Si ya la tienes, entra con ella.
+        Si ya tienes cuenta de BotizLab, inicia sesión.
       </p>
 
       <form id="formAcceso" novalidate onsubmit="return false">
+        <!-- En el registro cada campo va en su línea: son datos distintos, y en
+             pareja parecen uno solo partido en dos -->
         <div class="solo-registro" hidden>
-          <div class="campos">
-            <label>
-              <span>Nombre</span>
-              <input type="text" name="nombre" maxlength="40" autocomplete="name" aria-describedby="e-nombre" />
-              <small class="fallo" id="e-nombre"></small>
-            </label>
-            <label>
-              <span>Usuario</span>
-              <input type="text" name="usuario" maxlength="20" autocomplete="username" placeholder="sin arroba" aria-describedby="e-usuario" />
-              <small class="fallo" id="e-usuario"></small>
-            </label>
-          </div>
+          <label>
+            <span>Nombre</span>
+            <input type="text" name="nombre" maxlength="40" autocomplete="name" aria-describedby="e-nombre" />
+            <small class="fallo" id="e-nombre"></small>
+          </label>
+          <label>
+            <span>Usuario</span>
+            <input type="text" name="usuario" maxlength="20" autocomplete="username" placeholder="sin arroba" aria-describedby="e-usuario" />
+            <small class="fallo" id="e-usuario"></small>
+          </label>
         </div>
 
         <label>
@@ -66,17 +66,31 @@
           <small class="fallo" id="e-clave"></small>
         </label>
 
+        <!-- Sin marcarla no se crea la cuenta. Y va desmarcada de fábrica: un
+             consentimiento que viene puesto no consiente nada. -->
+        <div class="solo-registro acepto" hidden>
+          <label class="casilla">
+            <input type="checkbox" name="acepto" aria-describedby="e-acepto" />
+            <span class="casilla-txt">
+              He leído y acepto los
+              <a href="https://botizlab.github.io/gymspeak-web/terminos.html" target="_blank" rel="noopener">términos</a>
+              y la
+              <a href="https://botizlab.github.io/gymspeak-web/privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.
+            </span>
+          </label>
+          <small class="fallo" id="e-acepto"></small>
+        </div>
+
         <div class="envio">
           <button class="btn btn-primary" type="submit" id="btnAcceso">Entrar</button>
-          <button class="btn-texto" type="button" id="btnOlvide">Olvidé la contraseña</button>
+          <button class="btn-texto" type="button" id="btnOlvide">He olvidado mi contraseña</button>
         </div>
         <p class="aviso" id="avisoAcceso" role="status" aria-live="polite"></p>
       </form>
 
-      <p class="legal">
-        Al crear la cuenta aceptas los
-        <a href="https://botizlab.github.io/gymspeak-web/terminos.html" target="_blank" rel="noopener">términos</a> y la
-        <a href="https://botizlab.github.io/gymspeak-web/privacidad.html" target="_blank" rel="noopener">privacidad</a>.
+      <p class="cambiar-modo">
+        <span id="cambiarTexto">¿No tienes cuenta?</span>
+        <button type="button" class="btn-texto" id="btnCambiar">Crear una</button>
       </p>
     </section>
 
@@ -135,6 +149,6 @@
     </div>
   </footer>
 
-  <script type="module" src="cuenta-pagina.js?v=7"></script>
+  <script type="module" src="cuenta-pagina.js?v=9"></script>
 </body>
 </html>

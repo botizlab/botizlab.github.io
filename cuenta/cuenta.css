@@ -173,3 +173,9 @@ main.estrecho { padding-top: 40px; }
   margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);
   font-size: 12px; color: var(--faint); line-height: 1.55;
 }
+
+/* Cada título se separa de la caja anterior mucho más de lo que se separa de
+   la suya (36 px arriba contra 16 abajo). Sin esto quedaban pegados a la caja
+   de encima, y un título pegado a lo anterior parece que la cierra en vez de
+   abrir lo siguiente. */
+#perfil .label { margin-top: 36px; }

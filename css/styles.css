@@ -128,7 +128,10 @@ img { max-width: 100%; }
   color: var(--faint); margin: 0 0 16px 4px;
 }
 
-main { padding: 42px 0 20px; }
+/* Va con `main.wrap` y no con `main` a secas: `.wrap` pone `padding: 0 22px`
+   y, siendo una clase, gana al selector de elemento. Por eso la primera caja
+   salia pegada a la barra. */
+main.wrap { padding-top: 56px; padding-bottom: 20px; }
 main section { margin-bottom: 46px; }
 
 
@@ -279,6 +282,7 @@ footer { border-top: 1px solid var(--border); padding: 22px 0; margin-top: 20px;
 /* ─── Estrecho ───────────────────────────────────────────── */
 
 @media (max-width: 620px) {
+  main.wrap { padding-top: 34px; }
   .campos { grid-template-columns: 1fr; }
   .intro { grid-template-columns: 64px 1fr; gap: 16px; }
   .avatar { width: 64px; height: 64px; }

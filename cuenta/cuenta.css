@@ -1,7 +1,8 @@
 /* La página de cuenta. Hereda todo de ../css/styles.css; aquí solo lo suyo. */
 
 .estrecho { max-width: 560px; }
-main.estrecho { padding-top: 40px; }
+main.estrecho { padding-top: 56px; }
+@media (max-width: 620px) { main.estrecho { padding-top: 34px; } }
 
 .cargando { color: var(--faint); text-align: center; padding: 60px 0; font-size: 14px; }
 

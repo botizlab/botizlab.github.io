@@ -320,12 +320,12 @@
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=9';
+        import { montarBoton } from '/js/cuenta.js?v=10';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=9');
+        const { montarCorredor } = await import('/js/corredor.js?v=10');
         montarCorredor('.nav-container');
     </script>
-    <script type="module" src="js/clasificacion.js?v=9"></script>
+    <script type="module" src="js/clasificacion.js?v=10"></script>
 </body>
 </html>

@@ -252,11 +252,17 @@ export async function montarBoton(hueco, opciones = {}) {
     irPerfil.setAttribute('role', 'menuitem');
     irPerfil.textContent = 'Mi cuenta';
 
-    // El panel: la app en el navegador, con la misma cuenta
-    const irPanel = document.createElement('a');
-    irPanel.href = 'https://botizlab.github.io/gymspeak-panel/';
-    irPanel.setAttribute('role', 'menuitem');
-    irPanel.textContent = 'GymSpeak web';
+    // El panel: la app en el navegador, con la misma cuenta. Si ya estás
+    // dentro del panel no se ofrece: un enlace a donde ya estás es ruido.
+    const PANEL = 'https://botizlab.github.io/gymspeak-panel/';
+    const yaEnElPanel = location.pathname.startsWith('/gymspeak-panel');
+    let irPanel = null;
+    if (!yaEnElPanel) {
+        irPanel = document.createElement('a');
+        irPanel.href = PANEL;
+        irPanel.setAttribute('role', 'menuitem');
+        irPanel.textContent = 'GymSpeak web';
+    }
 
     const cerrar = document.createElement('button');
     cerrar.type = 'button';
@@ -287,7 +293,7 @@ export async function montarBoton(hueco, opciones = {}) {
         location.reload();
     });
 
-    menu.append(irPerfil, irPanel, cerrar);
+    menu.append(irPerfil, ...(irPanel ? [irPanel] : []), cerrar);
     hueco.append(boton, menu);
 
     const abrirCerrar = (abrir) => {

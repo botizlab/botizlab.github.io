@@ -8,7 +8,7 @@
 import {
     sesion, entrar, registrar, salir, recuperar,
     perfil, guardarPerfil, comoTeLlamas, confirmar
-} from '../js/cuenta.js?v=11';
+} from '../js/cuenta.js?v=12';
 
 const $ = (id) => document.getElementById(id);
 const EMOJIS = ['💪', '🏋️', '🔥', '⚡', '🏃', '🥇', '🧠', '🦍', '🐺', '🚀', '🎯', '🥋'];
@@ -275,6 +275,8 @@ $('btnSalir').addEventListener('click', async () => {
 async function pintarSegunSesion() {
     $('cargando').hidden = true;
     const s = await sesion();
+    // La tarjeta de acceso se centra en vertical; el perfil no, que es largo
+    document.body.classList.toggle('centrado', !s);
     if (!s) {
         $('acceso').hidden = false;
         $('perfil').hidden = true;

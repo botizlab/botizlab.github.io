@@ -22,17 +22,21 @@ main.estrecho { padding-top: 40px; }
 
 #formAcceso { display: flex; flex-direction: column; gap: 12px; }
 #formAcceso label { display: flex; flex-direction: column; gap: 6px; }
-#formAcceso label > span,
+/* `:not(.casilla-txt)` es la clave: sin eso, esta regla pinta el texto de la
+   casilla en versalitas de 11 px, porque lleva ID y gana a cualquier clase. */
+#formAcceso label > span:not(.casilla-txt),
 #formPerfil label > span {
   font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
   color: var(--faint);
 }
-#formAcceso input, #formPerfil input {
+/* Excluir la casilla es imprescindible: con `width: 100%` medía 462 px de
+   ancho y empujaba su propio texto al otro extremo de la línea. */
+#formAcceso input:not([type="checkbox"]), #formPerfil input {
   font: inherit; font-size: 14px; color: var(--text);
   background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
   padding: 10px 12px; width: 100%; transition: border-color .18s;
 }
-#formAcceso input:focus, #formPerfil input:focus { outline: none; border-color: var(--accent); }
+#formAcceso input:not([type="checkbox"]):focus, #formPerfil input:focus { outline: none; border-color: var(--accent); }
 #formAcceso input.malo, #formPerfil input.malo { border-color: #d9614a; }
 #formAcceso input::placeholder, #formPerfil input::placeholder { color: var(--faint); }
 
@@ -56,17 +60,17 @@ main.estrecho { padding-top: 40px; }
 /* El selector va con #formAcceso a propósito: `#formAcceso label` pone
    `flex-direction: column` y gana por especificidad, así que sin esto la
    casilla acaba ENCIMA del texto en vez de a su izquierda. */
-#formAcceso label.casilla {
+#formAcceso label.casilla, #formAjustes label.casilla {
   display: flex; flex-direction: row; align-items: flex-start; gap: 10px;
   cursor: pointer;
 }
 .casilla input[type="checkbox"] {
-  width: 17px; height: 17px; flex: 0 0 auto; margin-top: 2px;
+  width: 17px; height: 17px; flex: 0 0 auto; margin: 2px 0 0;
   accent-color: var(--accent); cursor: pointer;
 }
 .casilla-txt {
+  flex: 1; min-width: 0;
   font-size: 12.5px; line-height: 1.5; color: var(--muted);
-  /* Gana a la regla de las etiquetas del formulario, que van en versalitas */
   font-weight: 400; letter-spacing: 0; text-transform: none;
 }
 .casilla-txt a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
@@ -156,12 +160,6 @@ main.estrecho { padding-top: 40px; }
   font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
   color: var(--faint);
 }
-/* Igual que en el registro: el cuadradito a la izquierda del texto */
-#formAjustes label.casilla { flex-direction: row; align-items: flex-start; gap: 10px; cursor: pointer; }
-#formAjustes .casilla input[type="checkbox"] {
-  width: 17px; height: 17px; flex: 0 0 auto; margin-top: 2px;
-  accent-color: var(--accent); cursor: pointer;
-}
 
 #formPerfil .envio, #formAjustes .envio {
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 4px;
@@ -179,3 +177,18 @@ main.estrecho { padding-top: 40px; }
    de encima, y un título pegado a lo anterior parece que la cierra en vez de
    abrir lo siguiente. */
 #perfil .label { margin-top: 36px; }
+
+/* Entrar/crear cuenta es una tarjeta corta: centrada queda donde la busca el
+   ojo. El perfil no se centra, que es largo y debe empezar arriba. */
+/* Sin restar alturas a ojo: el cuerpo se hace columna, el main se queda con
+   el hueco que sobra entre la barra y el pie, y la tarjeta se centra dentro.
+   Restando un numero fijo quedaba 66 px descuadrada, porque ese numero nunca
+   coincide con lo que mide el pie de verdad. */
+body.centrado { min-height: 100vh; display: flex; flex-direction: column; }
+body.centrado main.estrecho {
+  flex: 1; padding-top: 0;
+  display: grid; align-content: center;
+}
+/* `main section` lleva 46 px de margen inferior, y al centrar cuentan como
+   contenido: la tarjeta quedaba exactamente esos 46 px alta. */
+body.centrado main.estrecho > section { margin-bottom: 0; }

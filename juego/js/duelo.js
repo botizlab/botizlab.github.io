@@ -136,6 +136,10 @@ export async function abrirCanal(dueloId, onRival) {
 
     let ultimoEnvio = 0;
     return {
+        /** Mensajes de sala (listo, me voy): sin límite de ritmo, son contados. */
+        avisar(payload) {
+            canal.send({ type: 'broadcast', event: 'estado', payload });
+        },
         /** Se llama en cada fotograma; solo sale por la red cada 250 ms. */
         publicar(segundos, vivo) {
             const ahora = Date.now();

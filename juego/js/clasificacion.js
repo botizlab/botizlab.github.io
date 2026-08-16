@@ -10,7 +10,7 @@
  * tabla abierta a lectura sería descargable entera con la clave pública.
  */
 
-import { sesion } from '/js/cuenta.js?v=14';
+import { sesion } from '/js/cuenta.js?v=15';
 
 const SUPABASE_URL = 'https://datuqilcshjvapujdool.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdHVxaWxjc2hqdmFwdWpkb29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDgxMzIsImV4cCI6MjA5NDYyNDEzMn0.q6AZirRR1UsKKdkxvnmlmPDVQx09T-FckLl03aRh5Gw';
@@ -52,6 +52,9 @@ window.__subirMarca = async (segundos) => {
         if (r?.[0]?.mejorada) pintarTop();
     } catch { /* la partida ya está guardada en local; esto es un extra */ }
 };
+
+/** Lo usa el resumen para decidir si ofrecer guardar la marca. */
+window.__hayCuenta = async () => !!(await sesion().catch(() => null));
 
 // ═════════════════════ Pintar la tabla ═════════════════════
 

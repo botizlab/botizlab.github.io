@@ -81,6 +81,7 @@ const panels = {
     error: $('panelError'),
     login: $('panelLogin'),
     cola: $('panelCola'),
+    sala: $('panelSala'),
     duelo: $('panelDuelo'),
     pause: $('panelPause'),
     over: $('panelOver')
@@ -414,6 +415,9 @@ let semillaForzada = 0;
 export function jugarConSemilla(n) { semillaForzada = n >>> 0; }
 
 function startGame() {
+    // Si esto no es un duelo, no puede quedar rastro de uno anterior: el
+    // marcador del rival se quedaba puesto al volver a jugar solo.
+    if (!duelo.activo) { $('rival').hidden = true; duelo.canal = null; duelo.id = null; }
     Object.assign(game, {
         running: true,
         lane: -1,
@@ -511,9 +515,17 @@ function finishGame() {
     $('statKcal').textContent = `${Math.round(game.kcal)} kcal`;
 
     paintRecord();
+    // Sin sesión la marca se queda en el navegador: se dice aquí, con el
+    // número ya delante, y no como peaje antes de jugar
+    if (window.__hayCuenta) {
+        window.__hayCuenta().then((hay) => { $('guardarMarca').hidden = !!hay; });
+    } else {
+        $('guardarMarca').hidden = false;
+    }
     // La marca también sube a la clasificación, si hay sesión. No se espera a
     // que responda: que la red vaya lenta no puede retrasar el resultado.
-    if (window.__subirMarca) window.__subirMarca(game.segundos);
+    // Si te has ido a mitad, esa partida no cuenta para la clasificación
+    if (!duelo.abandonada && window.__subirMarca) window.__subirMarca(game.segundos);
     if (duelo.activo) { terminarDuelo(segundos); return; }
     showPanel('over');
 }
@@ -1009,13 +1021,18 @@ function stopCamera() {
  * más. Lo único que se añade a la partida es el marcador del rival.
  */
 const duelo = {
-    activo: false,
+    activo: false,       // hay partida de duelo EN CURSO
+    enSala: false,       // emparejados, esperando a que los dos digan «listo»
     id: null,
     canal: null,
+    yoListo: false,
+    rivalListo: false,
     rivalTiempo: 0,
     rivalVivo: true,
+    rivalSeFue: false,
     miTiempo: 0,
-    guardado: false
+    guardado: false,
+    abandonada: false    // me he ido yo a mitad: esta partida no cuenta
 };
 
 async function pedirDuelo() {
@@ -1043,32 +1060,115 @@ async function entrarEnCola(D) {
             $('colaNota').textContent = 'Prueba en un rato, o juega tú solo mientras tanto.';
             return;
         }
-        arrancarDuelo(D, encontrado.duelo);
+        entrarEnSala(D, encontrado.duelo);
     } catch (e) {
         showError('No se pudo buscar rival', e.message || 'Inténtalo de nuevo.');
     }
 }
 
-async function arrancarDuelo(D, info) {
-    duelo.activo = true;
+/**
+ * La sala: ya hay rival, pero nadie corre hasta que los dos dicen que están.
+ *
+ * El "listo" y el "me voy" viajan por el mismo canal efímero que ya usaba el
+ * marcador. No hacen falta ni tablas ni estados en el servidor: son dos
+ * personas hablando entre ellas durante medio minuto.
+ */
+async function entrarEnSala(D, info) {
+    duelo.enSala = true;
+    duelo.activo = false;
     duelo.id = info.id;
+    duelo.semilla = info.semilla;
+    duelo.yoListo = false;
+    duelo.rivalListo = false;
+    duelo.rivalSeFue = false;
     duelo.rivalTiempo = 0;
     duelo.rivalVivo = true;
     duelo.guardado = false;
+    duelo.abandonada = false;
+    duelo.D = D;
 
     duelo.canal = await D.abrirCanal(info.id, (p) => {
+        if (p.tipo === 'listo') { duelo.rivalListo = true; pintarSala(); intentarArrancar(); return; }
+        if (p.tipo === 'fuera') { rivalSeHaIdo(); return; }
+        // Mensaje de marcador: solo importa con la partida en marcha
         duelo.rivalTiempo = p.t || 0;
         duelo.rivalVivo = !!p.vivo;
     });
+
+    $('btnListoDuelo').disabled = false;
+    $('btnListoDuelo').textContent = 'Estoy listo';
+    $('cuentaAtras').hidden = true;
+    pintarSala();
+    showPanel('sala');
+}
+
+function pintarSala() {
+    const marca = (el, listo) => {
+        el.querySelector('.sala-marca').textContent = listo ? 'listo' : 'esperando';
+        el.classList.toggle('listo', listo);
+    };
+    marca($('salaYo'), duelo.yoListo);
+    marca($('salaRival'), duelo.rivalListo);
+    $('salaNota').textContent = duelo.yoListo && !duelo.rivalListo
+        ? 'Esperando a que tu rival esté listo.'
+        : 'Cuando los dos estéis listos, empieza la cuenta atrás.';
+}
+
+/** Si se va antes de empezar, aquí no hay partida: los dos fuera. */
+function rivalSeHaIdo() {
+    duelo.rivalSeFue = true;
+    if (duelo.activo) {
+        // A mitad de partida sí cuenta: se queda con el tiempo que llevara
+        duelo.rivalVivo = false;
+        pintarRival();
+        return;
+    }
+    cerrarDuelo();
+    showError('Tu rival se ha ido', 'No llegasteis a empezar, así que no cuenta. Puedes buscar a otro.');
+}
+
+let cuentaTimer = null;
+
+function intentarArrancar() {
+    if (!(duelo.yoListo && duelo.rivalListo) || duelo.activo || cuentaTimer) return;
+    $('btnListoDuelo').disabled = true;
+    $('btnSalirSala').disabled = true;
+    const caja = $('cuentaAtras');
+    caja.hidden = false;
+    let n = 3;
+    caja.textContent = n;
+    sfx.boton();
+    cuentaTimer = setInterval(() => {
+        n -= 1;
+        if (n > 0) { caja.textContent = n; sfx.boton(); return; }
+        clearInterval(cuentaTimer);
+        cuentaTimer = null;
+        caja.hidden = true;
+        $('btnSalirSala').disabled = false;
+        arrancarDuelo();
+    }, 1000);
+}
+
+function arrancarDuelo() {
+    duelo.enSala = false;
+    duelo.activo = true;
 
     $('rival').hidden = false;
     pintarRival();
 
     // LA CLAVE: los dos reciben la misma semilla, así que corren la pista
     // idéntica. Sin esto la comparación no valdría nada.
-    jugarConSemilla(info.semilla);
+    jugarConSemilla(duelo.semilla);
     input.mode = 'keys';
     startGame();
+}
+
+/** Salir de la sala antes de empezar: se avisa al otro para no dejarlo colgado. */
+function salirDeLaSala() {
+    if (duelo.canal) duelo.canal.avisar({ tipo: 'fuera' });
+    if (cuentaTimer) { clearInterval(cuentaTimer); cuentaTimer = null; }
+    cerrarDuelo();
+    showPanel('start');
 }
 
 function pintarRival() {
@@ -1130,8 +1230,20 @@ function resolverDuelo(miTiempo) {
     cerrarDuelo();
 }
 
+/** Abandonar con la partida ya en marcha: no cuenta para ti, y el rival sigue. */
+function abandonarDuelo() {
+    duelo.abandonada = true;
+    game.running = false;
+    if (duelo.canal) duelo.canal.avisar({ tipo: 'fuera' });
+    cerrarDuelo();
+    showPanel('start');
+}
+
 function cerrarDuelo() {
     duelo.activo = false;
+    duelo.enSala = false;
+    duelo.yoListo = false;
+    duelo.rivalListo = false;
     if (duelo.canal) { duelo.canal.cerrar(); duelo.canal = null; }
     $('rival').hidden = true;
 }
@@ -1145,6 +1257,16 @@ function conAudio(fn) {
         return fn(...args);
     };
 }
+
+$('btnListoDuelo').addEventListener('click', conAudio(() => {
+    duelo.yoListo = true;
+    if (duelo.canal) duelo.canal.avisar({ tipo: 'listo' });
+    $('btnListoDuelo').disabled = true;
+    $('btnListoDuelo').textContent = 'Listo ✓';
+    pintarSala();
+    intentarArrancar();
+}));
+$('btnSalirSala').addEventListener('click', conAudio(salirDeLaSala));
 
 $('btnCam').addEventListener('click', conAudio(startWithCamera));
 $('btnKeys').addEventListener('click', conAudio(startWithKeys));

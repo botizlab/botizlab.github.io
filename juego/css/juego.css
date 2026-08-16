@@ -680,3 +680,36 @@
         animation: none;
     }
 }
+
+/* ─── Sala del duelo ──────────────────────────────────────────────────────── */
+.sala-estados {
+    display: flex; align-items: center; justify-content: center; gap: 1rem;
+    margin: 1.3rem 0;
+}
+.sala-jug {
+    flex: 1; max-width: 150px; padding: .8rem;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid var(--glass-border, #26262c); border-radius: 12px;
+    transition: border-color .2s, background .2s;
+}
+.sala-jug.listo { border-color: var(--accent-green, #34d27b); background: rgba(52, 210, 123, .09); }
+.sala-quien { display: block; font-weight: 800; font-size: .95rem; }
+.sala-marca { display: block; font-size: .78rem; color: var(--text-muted, #a0a0ab); margin-top: .15rem; }
+.sala-jug.listo .sala-marca { color: var(--accent-green, #34d27b); font-weight: 700; }
+.sala-vs { font-size: .8rem; color: var(--text-muted, #a0a0ab); font-weight: 800; letter-spacing: .1em; }
+
+/* La cuenta atrás manda: es lo único que hay que mirar en ese momento */
+.cuenta-atras {
+    font-size: 3.4rem; font-weight: 900; line-height: 1;
+    color: var(--accent-green, #34d27b); margin-top: 1rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Sin cuenta: la marca se queda en el navegador */
+.guardar-marca {
+    margin-top: 1rem; padding: .8rem 1rem; font-size: .85rem;
+    background: rgba(255, 255, 255, .035);
+    border: 1px solid var(--glass-border, #26262c); border-radius: 11px;
+    color: var(--text-muted, #a0a0ab);
+}
+.guardar-marca a { color: var(--accent-green, #34d27b); font-weight: 700; }

@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css?v=14">
-    <link rel="stylesheet" href="css/juego.css?v=14">
+    <link rel="stylesheet" href="css/style.css?v=15">
+    <link rel="stylesheet" href="css/juego.css?v=15">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -161,6 +161,23 @@
                     </div>
                 </div>
 
+                <!-- Sala: ya hay rival, pero no se empieza hasta que los dos
+                     dicen que están. Aquí se puede salir sin penalización. -->
+                <div class="panel" id="panelSala" hidden>
+                    <h2 id="salaTitulo">Rival encontrado</h2>
+                    <p class="panel-note" id="salaNota">Cuando los dos estéis listos, empieza la cuenta atrás.</p>
+                    <div class="sala-estados">
+                        <div class="sala-jug" id="salaYo"><span class="sala-quien">Tú</span><span class="sala-marca">esperando</span></div>
+                        <div class="sala-vs">vs</div>
+                        <div class="sala-jug" id="salaRival"><span class="sala-quien">Rival</span><span class="sala-marca">esperando</span></div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn-primary" id="btnListoDuelo" type="button">Estoy listo</button>
+                        <button class="btn-secondary" id="btnSalirSala" type="button">Salir</button>
+                    </div>
+                    <p class="cuenta-atras" id="cuentaAtras" hidden></p>
+                </div>
+
                 <div class="panel" id="panelDuelo" hidden>
                     <h2 id="dueloTitulo">Se acabó</h2>
                     <p class="panel-score" id="dueloMarcador"></p>
@@ -191,6 +208,16 @@
                         <div class="stat"><span class="stat-label">Calorías</span><strong id="statKcal">0 kcal</strong></div>
                     </div>
                     <p class="stats-note">Estimación de lo que quemarías en una cinta a ese ritmo, calculada para 70 kg. No mide lo que has quemado tú.</p>
+
+                    <!-- Sin cuenta, la marca se queda en este navegador. Se dice
+                         DESPUÉS de jugar y con el número delante: pedirlo antes
+                         sería un peaje para entrar. -->
+                    <p class="guardar-marca" id="guardarMarca" hidden>
+                        Esta marca solo se guarda en este navegador.
+                        <a href="https://botizlab.github.io/cuenta/">Entra con tu cuenta</a>
+                        para que cuente en la clasificación.
+                    </p>
+
                     <div class="panel-actions">
                         <button class="btn-primary" id="btnAgain" type="button">Otra vez</button>
                         <a class="btn-secondary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app">Descargar GymSpeak</a>
@@ -319,19 +346,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js?v=14"></script>
+    <script type="module" src="js/juego.js?v=15"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=14';
+        import { montarBoton } from '/js/cuenta.js?v=15';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=14');
+        const { montarCorredor } = await import('/js/corredor.js?v=15');
         montarCorredor('.nav-container');
 
-        const { montarMenu } = await import('/js/menu.js?v=14');
+        const { montarMenu } = await import('/js/menu.js?v=15');
         montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=14"></script>
+    <script type="module" src="js/clasificacion.js?v=15"></script>
 </body>
 </html>

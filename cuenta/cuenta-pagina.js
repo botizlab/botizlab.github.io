@@ -8,7 +8,7 @@
 import {
     sesion, entrar, registrar, salir, recuperar,
     perfil, guardarPerfil, comoTeLlamas, confirmar
-} from '../js/cuenta.js?v=14';
+} from '../js/cuenta.js?v=15';
 
 const $ = (id) => document.getElementById(id);
 const EMOJIS = ['💪', '🏋️', '🔥', '⚡', '🏃', '🥇', '🧠', '🦍', '🐺', '🚀', '🎯', '🥋'];

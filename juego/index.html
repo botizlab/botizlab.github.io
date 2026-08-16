@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css?v=15">
-    <link rel="stylesheet" href="css/juego.css?v=15">
+    <link rel="stylesheet" href="css/style.css?v=16">
+    <link rel="stylesheet" href="css/juego.css?v=16">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -212,6 +212,19 @@
                     <!-- Sin cuenta, la marca se queda en este navegador. Se dice
                          DESPUÉS de jugar y con el número delante: pedirlo antes
                          sería un peaje para entrar. -->
+                    <!-- La clasificacion, aqui: es cuando de verdad quieres
+                         saber en que puesto te ha dejado la partida -->
+                    <div class="marcador" id="marcadorFinal" hidden>
+                        <div class="marcador-cab">
+                            <span>Clasificación</span>
+                            <span id="marcadorMiPuesto"></span>
+                        </div>
+                        <table class="marcador-tabla">
+                            <thead><tr><th>#</th><th>Jugador</th><th>Marca</th></tr></thead>
+                            <tbody id="marcadorCuerpo"></tbody>
+                        </table>
+                    </div>
+
                     <p class="guardar-marca" id="guardarMarca" hidden>
                         Esta marca solo se guarda en este navegador.
                         <a href="https://botizlab.github.io/cuenta/">Entra con tu cuenta</a>
@@ -346,19 +359,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js?v=15"></script>
+    <script type="module" src="js/juego.js?v=16"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=15';
+        import { montarBoton } from '/js/cuenta.js?v=16';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=15');
+        const { montarCorredor } = await import('/js/corredor.js?v=16');
         montarCorredor('.nav-container');
 
-        const { montarMenu } = await import('/js/menu.js?v=15');
+        const { montarMenu } = await import('/js/menu.js?v=16');
         montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=15"></script>
+    <script type="module" src="js/clasificacion.js?v=16"></script>
 </body>
 </html>

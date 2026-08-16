@@ -10,7 +10,7 @@
  * tabla abierta a lectura sería descargable entera con la clave pública.
  */
 
-import { sesion } from '/js/cuenta.js?v=15';
+import { sesion } from '/js/cuenta.js?v=16';
 
 const SUPABASE_URL = 'https://datuqilcshjvapujdool.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdHVxaWxjc2hqdmFwdWpkb29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDgxMzIsImV4cCI6MjA5NDYyNDEzMn0.q6AZirRR1UsKKdkxvnmlmPDVQx09T-FckLl03aRh5Gw';
@@ -53,6 +53,58 @@ window.__subirMarca = async (segundos) => {
     } catch { /* la partida ya está guardada en local; esto es un extra */ }
 };
 
+/**
+ * El marcador que sale al terminar la partida.
+ *
+ * Es el mismo dato que la tabla de la página, pero corto y en el momento en
+ * que de verdad interesa: acabas de jugar y quieres saber dónde te deja.
+ */
+window.__marcadorFinal = async () => {
+    const caja = $('marcadorFinal');
+    const cuerpo = $('marcadorCuerpo');
+    if (!caja || !cuerpo) return;
+
+    let filas;
+    try {
+        filas = await rpc('runner_top', { p_limite: 5 });
+    } catch {
+        caja.hidden = true;   // sin tabla mejor no enseñar una caja vacía
+        return;
+    }
+    if (!filas.length) { caja.hidden = true; return; }
+
+    cuerpo.textContent = '';
+    for (const f of filas) {
+        const tr = document.createElement('tr');
+        if (f.soy_yo) tr.className = 'yo';
+        const p = document.createElement('td');
+        p.className = 'puesto';
+        p.textContent = f.puesto;
+        const q = document.createElement('td');
+        q.textContent = f.usuario ? '@' + f.usuario : (f.nombre || 'Anónimo');
+        const m = document.createElement('td');
+        m.className = 'marca';
+        m.textContent = tiempo(f.segundos);
+        tr.append(p, q, m);
+        cuerpo.append(tr);
+    }
+
+    // Tu puesto en la cabecera, aunque no salgas entre los cinco
+    const mio = $('marcadorMiPuesto');
+    mio.textContent = '';
+    const dentro = filas.find((f) => f.soy_yo);
+    if (dentro) {
+        mio.textContent = `Vas ${dentro.puesto}º`;
+    } else if (await sesion().catch(() => null)) {
+        try {
+            const r = await rpc('runner_mi_puesto');
+            if (r?.length) mio.textContent = `Vas ${r[0].puesto}º de ${r[0].total}`;
+        } catch { /* sin puesto, sin texto */ }
+    }
+    caja.hidden = false;
+    pintarTop();   // la de la página, por si tu marca acaba de cambiarla
+};
+
 /** Lo usa el resumen para decidir si ofrecer guardar la marca. */
 window.__hayCuenta = async () => !!(await sesion().catch(() => null));
 
@@ -88,18 +140,14 @@ async function pintarTop() {
 
         const puesto = document.createElement('td');
         puesto.className = 'puesto';
-        // Las tres primeras se distinguen con la medalla, no con color solo
-        puesto.textContent = f.puesto === 1 ? '🥇' : f.puesto === 2 ? '🥈' : f.puesto === 3 ? '🥉' : f.puesto;
+        // Solo el número: los tres primeros ya se distinguen por estar arriba
+        puesto.textContent = f.puesto;
+        if (f.puesto <= 3) puesto.classList.add('podio');
 
         const quien = document.createElement('td');
         quien.className = 'quien';
-        const emoji = document.createElement('span');
-        emoji.className = 'top-emoji';
-        emoji.textContent = f.emoji || '💪';
-        const nombre = document.createElement('span');
         // Se enseña el usuario, que es como se identifica la gente en la app
-        nombre.textContent = f.usuario ? '@' + f.usuario : (f.nombre || 'Anónimo');
-        quien.append(emoji, nombre);
+        quien.textContent = f.usuario ? '@' + f.usuario : (f.nombre || 'Anónimo');
 
         const marca = document.createElement('td');
         marca.className = 'marca';

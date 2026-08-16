@@ -522,6 +522,10 @@ function finishGame() {
     } else {
         $('guardarMarca').hidden = false;
     }
+    // La clasificación se pide DESPUÉS de subir la marca, para que tu puesto
+    // ya salga actualizado en la misma pantalla
+    $('marcadorFinal').hidden = true;
+    if (window.__marcadorFinal) setTimeout(() => window.__marcadorFinal(), 350);
     // La marca también sube a la clasificación, si hay sesión. No se espera a
     // que responda: que la red vaya lenta no puede retrasar el resultado.
     // Si te has ido a mitad, esa partida no cuenta para la clasificación

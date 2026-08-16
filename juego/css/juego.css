@@ -1,3 +1,8 @@
+/* El atributo `hidden` tiene que ganar SIEMPRE. Sin esto cualquier regla con
+   `display` lo anula: es lo que hacia que el marcador del rival siguiera a la
+   vista jugando solo, aunque el elemento estuviera marcado como oculto. */
+[hidden] { display: none !important; }
+
 /* =========================================
    GymSpeak Runner - juego por cámara
    ========================================= */
@@ -713,3 +718,39 @@
     color: var(--text-muted, #a0a0ab);
 }
 .guardar-marca a { color: var(--accent-green, #34d27b); font-weight: 700; }
+
+/* ─── Marcador al terminar ────────────────────────────────────────────────── */
+.marcador {
+    margin-top: 1.1rem; text-align: left;
+    border: 1px solid var(--glass-border, #26262c); border-radius: 12px;
+    overflow: hidden; background: rgba(255, 255, 255, .025);
+}
+.marcador-cab {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .6rem .9rem; border-bottom: 1px solid var(--glass-border, #26262c);
+    font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--text-muted, #a0a0ab); font-weight: 700;
+}
+.marcador-cab span:last-child { color: var(--accent-green, #34d27b); letter-spacing: .04em; }
+.marcador-tabla { width: 100%; border-collapse: collapse; }
+.marcador-tabla th {
+    text-align: left; padding: .45rem .9rem; font-size: .64rem;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--text-muted, #a0a0ab); font-weight: 700;
+}
+.marcador-tabla th:last-child, .marcador-tabla .marca { text-align: right; }
+.marcador-tabla td {
+    padding: .5rem .9rem; font-size: .88rem;
+    border-top: 1px solid rgba(255, 255, 255, .05);
+}
+.marcador-tabla .puesto {
+    width: 2.2rem; font-weight: 800; color: var(--text-muted, #a0a0ab);
+    font-variant-numeric: tabular-nums;
+}
+.marcador-tabla .marca { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Tu fila, con barra lateral ademas del fondo: no solo color */
+.marcador-tabla tr.yo { background: rgba(52, 210, 123, .1); box-shadow: inset 3px 0 0 var(--accent-green, #34d27b); }
+.marcador-tabla tr.yo .puesto { color: var(--accent-green, #34d27b); }
+
+/* La tabla grande de la pagina: el podio se marca con el numero en verde */
+.tabla-top .puesto.podio { color: var(--accent-green, #34d27b); }

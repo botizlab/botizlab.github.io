@@ -994,6 +994,14 @@ function collectCalibration(m, now) {
         pose.fase = 'juego';
         camBox.classList.remove('grande');
         pose.prev = null;
+        // Si la cámara se pidió para un duelo, aquí NO se empieza a jugar: se
+        // sigue con lo que estuviera pendiente (buscar rival, aceptar un reto)
+        if (duelo.trasCalibrar) {
+            const seguir = duelo.trasCalibrar;
+            duelo.trasCalibrar = null;
+            seguir();
+            return;
+        }
         startGame();
     }
 }
@@ -1080,7 +1088,8 @@ const duelo = {
     rivalSeFue: false,
     miTiempo: 0,
     guardado: false,
-    abandonada: false    // me he ido yo a mitad: esta partida no cuenta
+    abandonada: false,   // me he ido yo a mitad: esta partida no cuenta
+    trasCalibrar: null   // qué hacer cuando la cámara esté lista
 };
 
 async function pedirDuelo() {
@@ -1098,6 +1107,17 @@ async function pedirDuelo() {
     duelo.D = D;
     showPanel('duelos');
     pintarRetos(D);
+}
+
+/**
+ * El 1vs1 se juega con el cuerpo. Se prepara la cámara ANTES de buscar rival:
+ * si se hiciera después, el otro estaría esperando en la sala mientras tú das
+ * permisos y te calibras.
+ */
+async function conCamaraYLuego(seguir) {
+    if (pose.base && pose.landmarker) { seguir(); return; }
+    duelo.trasCalibrar = seguir;
+    await startWithCamera();
 }
 
 /** Retos que te esperan. Se piden cada vez que se abre el menú. */
@@ -1133,7 +1153,7 @@ async function pintarRetos(D) {
             try {
                 const reto = await D.responderReto(r.id, true);
                 const info = await D.dueloDeReto(reto.duelo_id);
-                entrarEnSala(D, info);
+                conCamaraYLuego(() => entrarEnSala(D, info));
             } catch (e) {
                 showError('No se pudo aceptar', e.message || 'Inténtalo otra vez.');
             }
@@ -1196,8 +1216,19 @@ async function pintarAmigos(D) {
 async function entrarEnCola(D) {
     showPanel('cola');
     $('colaTitulo').textContent = 'Buscando rival…';
+    $('colaNota').textContent = 'En cuanto entre alguien más, empezáis los dos a la vez y con la misma pista.';
+    // Antes de nada, fuera los fantasmas: una fila vieja en la cola empareja al
+    // instante y parece que te haya metido en una partida sin buscar
+    try { await D.limpiarCola(); } catch { /* si falla, la propia búsqueda limpia */ }
+
+    // La cola tiene que VERSE. Aunque haya rival al momento, el paso existe y
+    // saltárselo hace pensar que te han metido en una partida de la nada.
+    const desde = Date.now();
+    const minimo = () => new Promise((r) => setTimeout(r, Math.max(0, 1200 - (Date.now() - desde))));
+
     try {
         const encontrado = await D.buscarRival((txt) => { $('colaTitulo').textContent = txt; });
+        await minimo();
         if (!encontrado) {
             $('colaTitulo').textContent = 'No ha entrado nadie';
             $('colaNota').textContent = 'Prueba en un rato, o juega tú solo mientras tanto.';
@@ -1241,6 +1272,14 @@ async function entrarEnSala(D, info) {
     $('btnListoDuelo').disabled = false;
     $('btnListoDuelo').textContent = 'Estoy listo';
     $('cuentaAtras').hidden = true;
+    // Contra quién juegas, que es lo primero que uno quiere saber
+    $('salaRival').querySelector('.sala-quien').textContent = 'Rival';
+    D.quienEsMiRival(info.id).then((r) => {
+        const q = r?.[0];
+        if (!q) return;
+        $('salaRival').querySelector('.sala-quien').textContent =
+            q.usuario ? '@' + q.usuario : (q.nombre || 'Rival');
+    }).catch(() => { /* sin nombre, se queda en «Rival» */ });
     pintarSala();
     showPanel('sala');
 }
@@ -1302,7 +1341,10 @@ function arrancarDuelo() {
     // LA CLAVE: los dos reciben la misma semilla, así que corren la pista
     // idéntica. Sin esto la comparación no valdría nada.
     jugarConSemilla(duelo.semilla);
-    input.mode = 'keys';
+    // El 1vs1 es con el cuerpo, siempre: si uno juega con teclado y el otro
+    // moviéndose, no compiten en lo mismo. La cámara ya está calibrada antes
+    // de entrar en la sala, así que aquí solo se arranca.
+    input.mode = 'pose';
     startGame();
 }
 
@@ -1428,7 +1470,8 @@ function conAudio(fn) {
     };
 }
 
-$('btnBuscarRival').addEventListener('click', conAudio(() => entrarEnCola(duelo.D)));
+$('btnBuscarRival').addEventListener('click', conAudio(() =>
+    conCamaraYLuego(() => entrarEnCola(duelo.D))));
 $('btnRetarAmigo').addEventListener('click', conAudio(() => {
     showPanel('amigos');
     pintarAmigos(duelo.D);

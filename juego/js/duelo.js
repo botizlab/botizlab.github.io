@@ -179,6 +179,8 @@ export const retar = (idAmigo) => llamar('runner_retar', { p_amigo: idAmigo });
 export const responderReto = (idReto, acepto) =>
     llamar('runner_responder_reto', { p_reto: idReto, p_acepto: acepto });
 export const misStats = () => llamar('runner_mis_stats');
+export const quienEsMiRival = (idDuelo) => llamar('runner_rival', { p_duelo: idDuelo });
+export const limpiarCola = () => llamar('runner_limpiar_cola');
 
 /**
  * Avisa cuando alguien te reta, sin recargar nada.

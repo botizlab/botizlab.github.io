@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css?v=19">
-    <link rel="stylesheet" href="css/juego.css?v=19">
+    <link rel="stylesheet" href="css/style.css?v=20">
+    <link rel="stylesheet" href="css/juego.css?v=20">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -173,7 +173,7 @@
                 <!-- Elegir cómo se juega el uno contra uno -->
                 <div class="panel" id="panelDuelos" hidden>
                     <h2>1<span class="vs">vs</span>1</h2>
-                    <p class="panel-note">Los dos corréis la misma pista. Gana quien aguante más.</p>
+                    <p class="panel-note">Los dos corréis la misma pista y gana quien aguante más. <strong>El 1vs1 se juega con la cámara</strong>: te pedirá permiso y te calibrarás antes de buscar rival, para que ninguno de los dos juegue con teclado.</p>
                     <div class="panel-actions">
                         <button class="btn-primary" id="btnBuscarRival" type="button">Buscar rival</button>
                         <button class="btn-secondary" id="btnRetarAmigo" type="button">Retar a un amigo</button>
@@ -406,19 +406,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js?v=19"></script>
+    <script type="module" src="js/juego.js?v=20"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=19';
+        import { montarBoton } from '/js/cuenta.js?v=20';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=19');
+        const { montarCorredor } = await import('/js/corredor.js?v=20');
         montarCorredor('.nav-container');
 
-        const { montarMenu } = await import('/js/menu.js?v=19');
+        const { montarMenu } = await import('/js/menu.js?v=20');
         montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=19"></script>
+    <script type="module" src="js/clasificacion.js?v=20"></script>
 </body>
 </html>

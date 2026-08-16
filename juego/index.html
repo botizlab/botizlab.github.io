@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css?v=20">
-    <link rel="stylesheet" href="css/juego.css?v=20">
+    <link rel="stylesheet" href="css/style.css?v=21">
+    <link rel="stylesheet" href="css/juego.css?v=21">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -406,19 +406,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js?v=20"></script>
+    <script type="module" src="js/juego.js?v=21"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=20';
+        import { montarBoton } from '/js/cuenta.js?v=21';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=20');
+        const { montarCorredor } = await import('/js/corredor.js?v=21');
         montarCorredor('.nav-container');
 
-        const { montarMenu } = await import('/js/menu.js?v=20');
+        const { montarMenu } = await import('/js/menu.js?v=21');
         montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=20"></script>
+    <script type="module" src="js/clasificacion.js?v=21"></script>
 </body>
 </html>

@@ -1089,7 +1089,8 @@ const duelo = {
     miTiempo: 0,
     guardado: false,
     abandonada: false,   // me he ido yo a mitad: esta partida no cuenta
-    trasCalibrar: null   // qué hacer cuando la cámara esté lista
+    trasCalibrar: null,  // qué hacer cuando la cámara esté lista
+    esperaSala: null     // plazo para que el rival diga «listo»
 };
 
 async function pedirDuelo() {
@@ -1220,6 +1221,8 @@ async function entrarEnCola(D) {
     // Antes de nada, fuera los fantasmas: una fila vieja en la cola empareja al
     // instante y parece que te haya metido en una partida sin buscar
     try { await D.limpiarCola(); } catch { /* si falla, la propia búsqueda limpia */ }
+    // Si cierras la pestaña estando en la cola, sales al instante
+    await D.armarSalidaDeCola();
 
     // La cola tiene que VERSE. Aunque haya rival al momento, el paso existe y
     // saltárselo hace pensar que te han metido en una partida de la nada.
@@ -1228,6 +1231,7 @@ async function entrarEnCola(D) {
 
     try {
         const encontrado = await D.buscarRival((txt) => { $('colaTitulo').textContent = txt; });
+        D.desarmarSalidaDeCola();   // ya no estás en la cola, pase lo que pase
         await minimo();
         if (!encontrado) {
             $('colaTitulo').textContent = 'No ha entrado nadie';
@@ -1282,6 +1286,16 @@ async function entrarEnSala(D, info) {
     }).catch(() => { /* sin nombre, se queda en «Rival» */ });
     pintarSala();
     showPanel('sala');
+
+    // Un rival que cerró la pestaña ya no puede avisar de nada, así que su
+    // «listo» no va a llegar nunca. Sin este plazo te quedas mirando la sala
+    // para siempre.
+    clearTimeout(duelo.esperaSala);
+    duelo.esperaSala = setTimeout(() => {
+        if (duelo.activo || duelo.rivalListo) return;
+        cerrarDuelo();
+        showError('Tu rival no responde', 'Se habrá ido. No cuenta como partida: puedes buscar a otro.');
+    }, 45000);
 }
 
 function pintarSala() {
@@ -1332,6 +1346,7 @@ function intentarArrancar() {
 }
 
 function arrancarDuelo() {
+    clearTimeout(duelo.esperaSala);
     duelo.enSala = false;
     duelo.activo = true;
 
@@ -1425,6 +1440,7 @@ function abandonarDuelo() {
 }
 
 function cerrarDuelo() {
+    clearTimeout(duelo.esperaSala);
     duelo.activo = false;
     duelo.enSala = false;
     duelo.yoListo = false;

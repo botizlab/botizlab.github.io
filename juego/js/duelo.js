@@ -114,8 +114,53 @@ export async function buscarRival(onEstado) {
     return null;
 }
 
+/**
+ * Salir de la cola al cerrar la pestaña.
+ *
+ * `sendBeacon` no sirve: no deja poner cabeceras, y sin `Authorization` la
+ * función no sabe quién eres. `fetch` con `keepalive` sí las lleva y además
+ * sobrevive a que la página se muera, que es exactamente lo que hace falta.
+ *
+ * El token se guarda al entrar en la cola, porque en `pagehide` ya no hay
+ * tiempo de pedirlo: todo lo que se haga ahí tiene que ser síncrono.
+ */
+let soltarCola = null;
+
+export async function armarSalidaDeCola() {
+    const sb = await conectar();
+    const { data } = await sb.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return;
+
+    const irse = () => {
+        try {
+            fetch(`${SUPABASE_URL}/rest/v1/rpc/runner_salir_cola`, {
+                method: 'POST',
+                keepalive: true,
+                headers: {
+                    apikey: SUPABASE_ANON,
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: '{}'
+            });
+        } catch { /* la pestaña se está cerrando: no hay a quién avisar */ }
+    };
+
+    // Solo `pagehide`: cerrar o navegar fuera. Cambiar de pestaña un momento
+    // no debería echarte de la cola.
+    window.addEventListener('pagehide', irse);
+    soltarCola = () => window.removeEventListener('pagehide', irse);
+}
+
+/** Ya no estás en la cola: el aviso de cierre sobra. */
+export function desarmarSalidaDeCola() {
+    if (soltarCola) { soltarCola(); soltarCola = null; }
+}
+
 export async function cancelarBusqueda() {
     buscando = false;
+    desarmarSalidaDeCola();
     try {
         const sb = await conectar();
         await sb.rpc('runner_salir_cola');

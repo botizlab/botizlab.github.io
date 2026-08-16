@@ -10,7 +10,7 @@
  * tabla abierta a lectura sería descargable entera con la clave pública.
  */
 
-import { sesion } from '/js/cuenta.js?v=20';
+import { sesion } from '/js/cuenta.js?v=21';
 
 const SUPABASE_URL = 'https://datuqilcshjvapujdool.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdHVxaWxjc2hqdmFwdWpkb29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDgxMzIsImV4cCI6MjA5NDYyNDEzMn0.q6AZirRR1UsKKdkxvnmlmPDVQx09T-FckLl03aRh5Gw';

@@ -65,6 +65,9 @@ function traducirError(msg) {
     if (m.includes('schema cache') || m.includes('does not exist') || m.includes('42883')) {
         return 'El uno contra uno todavía no está activo. Vuelve pronto.';
     }
+    if (m.includes('solo puedes retar')) return 'Solo puedes retar a tus amigos.';
+    if (m.includes('ya no esta disponible')) return 'Ese reto ya no está disponible.';
+    if (m.includes('retarte a ti mismo')) return 'No puedes retarte a ti mismo.';
     if (m.includes('invalid login')) return 'Ese correo o esa contraseña no son correctos.';
     if (m.includes('email not confirmed')) return 'Te falta confirmar el correo. Mira tu bandeja.';
     if (m.includes('network')) return 'No hay conexión con el servidor.';
@@ -155,6 +158,34 @@ export async function abrirCanal(dueloId, onRival) {
             try { await sb.removeChannel(canal); } catch { /* da igual */ }
         }
     };
+}
+
+// ================= Retos entre amigos =================
+// El sistema de amistades es el MISMO de la app: aquí no se crea nada, solo se
+// lee. Y la comprobación de «somos amigos» la hace el servidor dentro de
+// runner_retar(), no este fichero: si la hiciera el navegador, bastaría con
+// llamar a la API a mano para retar a cualquiera.
+
+async function llamar(nombre, args = {}) {
+    const sb = await conectar();
+    const { data, error } = await sb.rpc(nombre, args);
+    if (error) throw new Error(traducirError(error.message));
+    return data;
+}
+
+export const misAmigos = () => llamar('runner_mis_amigos');
+export const retosPendientes = () => llamar('runner_retos_pendientes');
+export const retar = (idAmigo) => llamar('runner_retar', { p_amigo: idAmigo });
+export const responderReto = (idReto, acepto) =>
+    llamar('runner_responder_reto', { p_reto: idReto, p_acepto: acepto });
+export const misStats = () => llamar('runner_mis_stats');
+
+/** El duelo que ha creado un reto aceptado, para arrancar la sala. */
+export async function dueloDeReto(idDuelo) {
+    const sb = await conectar();
+    const { data, error } = await sb.from('runner_duelo').select('*').eq('id', idDuelo).maybeSingle();
+    if (error) throw new Error(traducirError(error.message));
+    return data;
 }
 
 export async function guardarTiempo(dueloId, segundos) {

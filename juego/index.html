@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css?v=17">
-    <link rel="stylesheet" href="css/juego.css?v=17">
+    <link rel="stylesheet" href="css/style.css?v=18">
+    <link rel="stylesheet" href="css/juego.css?v=18">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -161,6 +161,31 @@
                     </div>
                 </div>
 
+                <!-- Elegir cómo se juega el uno contra uno -->
+                <div class="panel" id="panelDuelos" hidden>
+                    <h2>Uno contra uno</h2>
+                    <p class="panel-note">Los dos corréis la misma pista. Gana quien aguante más.</p>
+                    <div class="panel-actions">
+                        <button class="btn-primary" id="btnBuscarRival" type="button">Buscar rival</button>
+                        <button class="btn-secondary" id="btnRetarAmigo" type="button">Retar a un amigo</button>
+                        <button class="btn-secondary" id="btnDuelosVolver" type="button">Volver</button>
+                    </div>
+                    <div class="retos" id="retosPendientes" hidden>
+                        <h3>Te han retado</h3>
+                        <div id="retosLista"></div>
+                    </div>
+                </div>
+
+                <!-- Tus amigos, los mismos que en la app -->
+                <div class="panel panel-ancho" id="panelAmigos" hidden>
+                    <h2>Retar a un amigo</h2>
+                    <p class="panel-note" id="amigosNota">Cargando tu lista…</p>
+                    <div class="amigos" id="amigosLista"></div>
+                    <div class="panel-actions">
+                        <button class="btn-secondary" id="btnAmigosVolver" type="button">Volver</button>
+                    </div>
+                </div>
+
                 <!-- Sala: ya hay rival, pero no se empieza hasta que los dos
                      dicen que están. Aquí se puede salir sin penalización. -->
                 <div class="panel" id="panelSala" hidden>
@@ -264,6 +289,14 @@
 
             <p class="top-aviso" id="topAviso" role="status" aria-live="polite"></p>
             <p class="mi-puesto" id="miPuesto" hidden></p>
+
+            <!-- Tus números. Solo con sesión: sin cuenta no hay nada que contar -->
+            <div class="mis-stats" id="misStats" hidden>
+                <div class="stat-caja"><span class="stat-n" id="stDuelos">0</span><span class="stat-t">Duelos</span></div>
+                <div class="stat-caja"><span class="stat-n" id="stVictorias">0</span><span class="stat-t">Victorias</span></div>
+                <div class="stat-caja"><span class="stat-n" id="stDerrotas">0</span><span class="stat-t">Derrotas</span></div>
+                <div class="stat-caja"><span class="stat-n" id="stRatio">—</span><span class="stat-t">Ratio</span></div>
+            </div>
             <button class="btn-secondary btn-recargar" type="button" id="topRecargar">Recargar</button>
         </section>
 
@@ -362,19 +395,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js?v=17"></script>
+    <script type="module" src="js/juego.js?v=18"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=17';
+        import { montarBoton } from '/js/cuenta.js?v=18';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=17');
+        const { montarCorredor } = await import('/js/corredor.js?v=18');
         montarCorredor('.nav-container');
 
-        const { montarMenu } = await import('/js/menu.js?v=17');
+        const { montarMenu } = await import('/js/menu.js?v=18');
         montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=17"></script>
+    <script type="module" src="js/clasificacion.js?v=18"></script>
 </body>
 </html>

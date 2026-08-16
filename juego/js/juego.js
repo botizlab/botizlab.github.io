@@ -80,6 +80,8 @@ const panels = {
     calib: $('panelCalib'),
     error: $('panelError'),
     login: $('panelLogin'),
+    duelos: $('panelDuelos'),
+    amigos: $('panelAmigos'),
     cola: $('panelCola'),
     sala: $('panelSala'),
     duelo: $('panelDuelo'),
@@ -1055,7 +1057,100 @@ async function pedirDuelo() {
     }
     const sesion = await D.sesionActual().catch(() => null);
     if (!sesion) { showPanel('login'); $('loginEmail').focus(); return; }
-    entrarEnCola(D);
+    duelo.D = D;
+    showPanel('duelos');
+    pintarRetos(D);
+}
+
+/** Retos que te esperan. Se piden cada vez que se abre el menú. */
+async function pintarRetos(D) {
+    const caja = $('retosPendientes');
+    const lista = $('retosLista');
+    caja.hidden = true;
+    lista.textContent = '';
+    let retos;
+    try { retos = await D.retosPendientes(); } catch { return; }
+    if (!retos?.length) return;
+
+    for (const r of retos) {
+        const fila = document.createElement('div');
+        fila.className = 'reto';
+        const quien = document.createElement('span');
+        quien.className = 'reto-quien';
+        quien.textContent = r.de_usuario ? '@' + r.de_usuario : (r.de_nombre || 'Alguien');
+        const si = document.createElement('button');
+        si.className = 'btn-primary btn-mini';
+        si.type = 'button';
+        si.textContent = 'Aceptar';
+        const no = document.createElement('button');
+        no.className = 'btn-secondary btn-mini';
+        no.type = 'button';
+        no.textContent = 'Rechazar';
+
+        si.addEventListener('click', async () => {
+            si.disabled = no.disabled = true;
+            try {
+                const reto = await D.responderReto(r.id, true);
+                const info = await D.dueloDeReto(reto.duelo_id);
+                entrarEnSala(D, info);
+            } catch (e) {
+                showError('No se pudo aceptar', e.message || 'Inténtalo otra vez.');
+            }
+        });
+        no.addEventListener('click', async () => {
+            si.disabled = no.disabled = true;
+            try { await D.responderReto(r.id, false); fila.remove(); } catch { /* da igual */ }
+            if (!lista.children.length) caja.hidden = true;
+        });
+
+        fila.append(quien, si, no);
+        lista.append(fila);
+    }
+    caja.hidden = false;
+}
+
+/** La lista de amigos, la misma que en la app. */
+async function pintarAmigos(D) {
+    const lista = $('amigosLista');
+    const nota = $('amigosNota');
+    lista.textContent = '';
+    nota.textContent = 'Cargando tu lista…';
+    let amigos;
+    try { amigos = await D.misAmigos(); } catch (e) {
+        nota.textContent = 'No se ha podido cargar tu lista de amigos.';
+        return;
+    }
+    if (!amigos?.length) {
+        nota.textContent = 'Todavía no tienes amigos aquí. Se añaden desde la app de GymSpeak, y aparecen solos.';
+        return;
+    }
+    nota.textContent = 'Son los mismos amigos que en la app.';
+
+    for (const a of amigos) {
+        const fila = document.createElement('div');
+        fila.className = 'amigo';
+        const quien = document.createElement('span');
+        quien.className = 'amigo-quien';
+        quien.textContent = a.usuario ? '@' + a.usuario : (a.nombre || 'Sin nombre');
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary btn-mini';
+        btn.type = 'button';
+        btn.textContent = 'Retar';
+        btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            btn.textContent = 'Enviando…';
+            try {
+                await D.retar(a.id);
+                btn.textContent = 'Retado ✓';
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Retar';
+                showError('No se pudo retar', e.message || 'Inténtalo otra vez.');
+            }
+        });
+        fila.append(quien, btn);
+        lista.append(fila);
+    }
 }
 
 async function entrarEnCola(D) {
@@ -1265,6 +1360,14 @@ function conAudio(fn) {
         return fn(...args);
     };
 }
+
+$('btnBuscarRival').addEventListener('click', conAudio(() => entrarEnCola(duelo.D)));
+$('btnRetarAmigo').addEventListener('click', conAudio(() => {
+    showPanel('amigos');
+    pintarAmigos(duelo.D);
+}));
+$('btnDuelosVolver').addEventListener('click', conAudio(() => showPanel('start')));
+$('btnAmigosVolver').addEventListener('click', conAudio(() => showPanel('duelos')));
 
 $('btnListoDuelo').addEventListener('click', conAudio(() => {
     duelo.yoListo = true;

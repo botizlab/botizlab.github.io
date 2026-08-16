@@ -10,7 +10,7 @@
  * tabla abierta a lectura sería descargable entera con la clave pública.
  */
 
-import { sesion } from '/js/cuenta.js?v=17';
+import { sesion } from '/js/cuenta.js?v=18';
 
 const SUPABASE_URL = 'https://datuqilcshjvapujdool.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdHVxaWxjc2hqdmFwdWpkb29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDgxMzIsImV4cCI6MjA5NDYyNDEzMn0.q6AZirRR1UsKKdkxvnmlmPDVQx09T-FckLl03aRh5Gw';
@@ -195,5 +195,28 @@ async function pintarMiPuesto(filas) {
     } catch { /* sin puesto, sin aviso */ }
 }
 
-$('topRecargar')?.addEventListener('click', pintarTop);
+/** Tus números de duelo. Sin sesión no hay caja: no habría nada que contar. */
+async function pintarStats() {
+    const caja = $('misStats');
+    if (!caja) return;
+    caja.hidden = true;
+    if (!(await sesion().catch(() => null))) return;
+
+    let r;
+    try { r = await rpc('runner_mis_stats'); } catch { return; }
+    if (!r?.length) return;
+
+    const { duelos, victorias, derrotas } = r[0];
+    $('stDuelos').textContent = duelos ?? 0;
+    $('stVictorias').textContent = victorias ?? 0;
+    $('stDerrotas').textContent = derrotas ?? 0;
+    // El ratio solo dice algo cuando hay partidas: con cero sería un 0 % falso
+    $('stRatio').textContent = duelos > 0
+        ? Math.round((victorias / duelos) * 100) + '%'
+        : '—';
+    caja.hidden = false;
+}
+
+$('topRecargar')?.addEventListener('click', () => { pintarTop(); pintarStats(); });
 pintarTop();
+pintarStats();

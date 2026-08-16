@@ -180,6 +180,27 @@ export const responderReto = (idReto, acepto) =>
     llamar('runner_responder_reto', { p_reto: idReto, p_acepto: acepto });
 export const misStats = () => llamar('runner_mis_stats');
 
+/**
+ * Avisa cuando alguien te reta, sin recargar nada.
+ *
+ * La RLS manda también aquí: Realtime aplica las políticas, así que solo
+ * llegan los retos en los que TÚ eres el retado. No hace falta filtrar en el
+ * navegador, y aunque se filtrara, no serviría de nada saltárselo.
+ */
+export async function escucharRetos(alLlegar) {
+    const sb = await conectar();
+    const { data } = await sb.auth.getSession();
+    if (!data.session) return null;
+
+    const canal = sb.channel('mis-retos')
+        .on('postgres_changes',
+            { event: 'INSERT', schema: 'public', table: 'runner_reto',
+              filter: `retado=eq.${data.session.user.id}` },
+            () => alLlegar())
+        .subscribe();
+    return () => { try { sb.removeChannel(canal); } catch { /* da igual */ } };
+}
+
 /** El duelo que ha creado un reto aceptado, para arrancar la sala. */
 export async function dueloDeReto(idDuelo) {
     const sb = await conectar();

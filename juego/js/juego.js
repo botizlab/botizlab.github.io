@@ -420,6 +420,9 @@ function startGame() {
     // Si esto no es un duelo, no puede quedar rastro de uno anterior: el
     // marcador del rival se quedaba puesto al volver a jugar solo.
     if (!duelo.activo) { $('rival').hidden = true; duelo.canal = null; duelo.id = null; }
+    $('btnRendir').hidden = false;
+    // En duelo no hay pausa: el rival no se para, así que el botón sobra
+    $('btnPause').hidden = duelo.activo;
     Object.assign(game, {
         running: true,
         lane: -1,
@@ -494,6 +497,8 @@ function formatoTiempo(seg) {
 
 function finishGame() {
     game.running = false;
+    $('btnRendir').hidden = true;
+    $('btnPause').hidden = false;
     const segundos = Math.floor(game.segundos);
     const previo = loadRecord();
     const nuevo = segundos > previo;
@@ -539,8 +544,34 @@ function finishGame() {
 // ================= Pausa =================
 let pausedAt = 0;
 
+/**
+ * Tres, dos, uno, ya. El juego NO avanza mientras tanto: se queda el último
+ * fotograma pintado, así que ves exactamente por dónde ibas.
+ */
+function cuentaReanudar(alTerminar) {
+    const caja = $('reanudar');
+    const num = $('reanudarNum');
+    let n = 3;
+    caja.hidden = false;
+    num.textContent = n;
+    sfx.boton();
+    const t = setInterval(() => {
+        n -= 1;
+        if (n > 0) { num.textContent = n; sfx.boton(); return; }
+        if (n === 0) { num.textContent = '¡Ya!'; sfx.boton(); return; }
+        clearInterval(t);
+        caja.hidden = true;
+        // No se toca `pausedAt`: el desfase se mide desde que pulsaste pausa
+        // hasta AHORA, así que la cuenta atrás tampoco cuenta como tiempo
+        // jugado. Si se reiniciara aquí, al volver estarías muerto.
+        alTerminar();
+    }, 700);
+}
+
 function togglePause(forzar) {
     if (!game.running) return;
+    // En duelo no hay pausa: el rival sigue corriendo y pararte seria trampa
+    if (duelo.activo) return;
     const quiero = forzar === undefined ? !game.paused : forzar;
     if (quiero === game.paused) return;
     game.paused = quiero;
@@ -553,21 +584,28 @@ function togglePause(forzar) {
             : 'Rendirte termina la partida y guarda el tiempo que llevas.';
         showPanel('pause');
     } else {
-        // Todo lo que va con reloj se desplaza, o al volver estarías muerto
-        const gap = performance.now() - pausedAt;
-        game.startedAt += gap;
-        game.jumpUntil += gap;
-        game.duckUntil += gap;
-        game.duckStarted += gap;
-        game.lastHit += gap;
-        lastFrame = performance.now();
+        // Volver no es instantaneo: tres segundos con la partida congelada por
+        // donde iba, para que te vuelvas a colocar. Sin esto, al quitar la
+        // pausa te comes lo primero que venga.
         overlay.hidden = true;
-        requestAnimationFrame(gameLoop);
+        cuentaReanudar(() => {
+            // Todo lo que va con reloj se desplaza, o al volver estarías muerto
+            const gap = performance.now() - pausedAt;
+            game.startedAt += gap;
+            game.jumpUntil += gap;
+            game.duckUntil += gap;
+            game.duckStarted += gap;
+            game.lastHit += gap;
+            lastFrame = performance.now();
+            requestAnimationFrame(gameLoop);
+        });
     }
 }
 
 function showPanel(name) {
     overlay.hidden = false;
+    // La pausa deja ver la partida detrás; los menús tienen su propio fondo
+    overlay.classList.toggle('velo', name === 'pause');
     for (const [key, el] of Object.entries(panels)) el.hidden = key !== name;
 }
 
@@ -1064,13 +1102,16 @@ async function pedirDuelo() {
 
 /** Retos que te esperan. Se piden cada vez que se abre el menú. */
 async function pintarRetos(D) {
-    const caja = $('retosPendientes');
+    // La caja se queda SIEMPRE visible: con cero retos enseña su aviso, que es
+    // información útil ("no tienes ninguno") y no un hueco vacío.
     const lista = $('retosLista');
-    caja.hidden = true;
     lista.textContent = '';
     let retos;
-    try { retos = await D.retosPendientes(); } catch { return; }
-    if (!retos?.length) return;
+    try { retos = await D.retosPendientes(); } catch { $('retosNota').textContent = 'No se han podido cargar los retos.'; return; }
+    $('chinchetaRetos').textContent = retos?.length || 0;
+    $('chinchetaRetos').hidden = !retos?.length;
+    if (!retos?.length) { $('retosNota').hidden = false; return; }
+    $('retosNota').hidden = true;
 
     for (const r of retos) {
         const fila = document.createElement('div');
@@ -1106,7 +1147,6 @@ async function pintarRetos(D) {
         fila.append(quien, si, no);
         lista.append(fila);
     }
-    caja.hidden = false;
 }
 
 /** La lista de amigos, la misma que en la app. */
@@ -1351,6 +1391,33 @@ function cerrarDuelo() {
     $('rival').hidden = true;
 }
 
+/**
+ * El contador de retos del botón 1vs1. Se pinta al cargar, se refresca solo
+ * cuando llega uno nuevo, y se puede refrescar a mano desde el menú.
+ */
+async function refrescarChincheta() {
+    const chincheta = $('chinchetaRetos');
+    try {
+        const D = duelo.D || (duelo.D = await import('./duelo.js'));
+        if (!(await D.sesionActual().catch(() => null))) { chincheta.hidden = true; return; }
+        const retos = await D.retosPendientes();
+        chincheta.textContent = retos.length;
+        chincheta.hidden = retos.length === 0;
+    } catch { chincheta.hidden = true; }
+}
+
+(async () => {
+    await refrescarChincheta();
+    try {
+        const D = duelo.D || (duelo.D = await import('./duelo.js'));
+        await D.escucharRetos(() => {
+            refrescarChincheta();
+            // Si estás mirando el menú de duelos, la lista se actualiza sola
+            if (!$('panelDuelos').hidden) pintarRetos(D);
+        });
+    } catch { /* sin tiempo real queda el botón de refrescar */ }
+})();
+
 // ================= Arranque =================
 /** El audio solo puede nacer dentro de un clic: lo encendemos en el primero. */
 function conAudio(fn) {
@@ -1367,6 +1434,10 @@ $('btnRetarAmigo').addEventListener('click', conAudio(() => {
     pintarAmigos(duelo.D);
 }));
 $('btnDuelosVolver').addEventListener('click', conAudio(() => showPanel('start')));
+$('btnRefrescarRetos').addEventListener('click', conAudio(() => {
+    pintarRetos(duelo.D);
+    refrescarChincheta();
+}));
 $('btnAmigosVolver').addEventListener('click', conAudio(() => showPanel('duelos')));
 
 $('btnListoDuelo').addEventListener('click', conAudio(() => {
@@ -1410,9 +1481,15 @@ $('btnMenuFinal').addEventListener('click', conAudio(alMenu));
  * que llevabas cuenta igual que si te hubieras caído. En un duelo es distinto:
  * ahí rendirse es abandonar, y eso no puntúa.
  */
-$('btnRendirse').addEventListener('click', conAudio(() => {
-    if (!game.running && !game.paused) return;
-    game.paused = false;
+/**
+ * Rendirse. Vive en una esquina del gameplay y no en la pausa, porque en duelo
+ * no hay pausa y aun así tienes que poder salir.
+ *   · en solitario: termina la partida y el tiempo cuenta, lo has aguantado
+ *   · en duelo: es un abandono, no puntúa y el rival sigue
+ */
+$('btnRendir').addEventListener('click', conAudio(() => {
+    if (!game.running) return;
+    $('btnRendir').hidden = true;
     if (duelo.activo) { abandonarDuelo(); hud.hidden = true; return; }
     game.running = false;
     hud.hidden = true;

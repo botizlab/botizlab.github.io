@@ -289,9 +289,18 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    background: rgba(8, 8, 10, 0.82);
-    backdrop-filter: blur(6px);
+    /* Fondo PROPIO, no el gameplay difuminado: un menú tiene que verse como un
+       menú y no como una pausa translúcida sobre la partida. Se tapa entero. */
+    background:
+        radial-gradient(120% 90% at 50% -20%, rgba(52, 210, 123, .10), transparent 62%),
+        linear-gradient(#0b0d10, #07080a);
     z-index: 4;
+}
+
+/* En pausa sí interesa ver por dónde ibas: ahí el fondo se vuelve velo */
+.overlay.velo {
+    background: rgba(8, 8, 10, .74);
+    backdrop-filter: blur(6px);
 }
 
 .overlay[hidden] {
@@ -379,6 +388,11 @@
 @media (max-width: 480px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Los modos van uno debajo de otro: son una lista de opciones, no una fila de
+   botones, y en una fila el tercero se cae a otra linea y descoloca todo. */
+.panel-modos { display: flex; flex-direction: column; gap: 10px; margin-top: 1.2rem; }
+.panel-modos button { width: 100%; justify-content: center; padding: 14px 20px; font-size: 1rem; }
 
 .panel-actions {
     display: flex;
@@ -795,3 +809,47 @@
 @media (max-width: 560px) {
     .mis-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ─── Rendirse, durante la partida ────────────────────────────────────────── */
+.btn-rendir {
+    position: absolute; left: 14px; bottom: 14px; z-index: 3;
+    font-family: var(--font-family); font-size: .78rem; font-weight: 700;
+    padding: .45rem .9rem; border-radius: 999px; cursor: pointer;
+    color: var(--text-muted, #a0a0ab);
+    background: rgba(8, 8, 10, .6); backdrop-filter: blur(6px);
+    border: 1px solid var(--glass-border, #26262c);
+    transition: color .15s, border-color .15s;
+}
+.btn-rendir:hover { color: #ff6b6b; border-color: rgba(255, 107, 107, .5); }
+/* Discreto a proposito: esta a mano, pero no invita a pulsarlo */
+
+/* ─── Cuenta atras al reanudar ────────────────────────────────────────────── */
+.reanudar {
+    position: absolute; inset: 0; z-index: 5;
+    display: grid; place-items: center;
+    background: rgba(8, 8, 10, .45);
+    font-size: clamp(3rem, 14vw, 6rem); font-weight: 900; line-height: 1;
+    color: var(--accent-green, #34d27b);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 40px rgba(52, 210, 123, .5);
+}
+
+/* El "vs" del 1vs1, mas pequeño para que se lean los unos */
+.vs { font-size: .7em; opacity: .75; margin: 0 .1em; }
+
+/* Chincheta de retos pendientes sobre el boton del modo */
+.chincheta {
+    display: inline-grid; place-items: center; min-width: 20px; height: 20px;
+    margin-left: .5rem; padding: 0 6px; border-radius: 999px;
+    background: #ff5d6c; color: #fff; font-size: .72rem; font-weight: 900;
+}
+
+/* Refrescar retos: pequeño, junto al titulo */
+.retos h3 { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.btn-refrescar {
+    background: none; border: 1px solid var(--glass-border, #26262c); border-radius: 7px;
+    color: var(--text-muted, #a0a0ab); cursor: pointer;
+    font-size: .9rem; line-height: 1; padding: .25rem .5rem;
+    transition: color .15s, border-color .15s;
+}
+.btn-refrescar:hover { color: var(--accent-green, #34d27b); border-color: var(--accent-green, #34d27b); }

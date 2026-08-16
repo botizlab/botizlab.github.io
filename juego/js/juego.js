@@ -545,6 +545,10 @@ function togglePause(forzar) {
 
     if (game.paused) {
         pausedAt = performance.now();
+        // En duelo, rendirse es abandonar: conviene decirlo ANTES de pulsarlo
+        $('notaPausa').textContent = duelo.activo
+            ? 'Rendirte en un duelo cuenta como abandono: no puntúa y tu rival sigue.'
+            : 'Rendirte termina la partida y guarda el tiempo que llevas.';
         showPanel('pause');
     } else {
         // Todo lo que va con reloj se desplaza, o al volver estarías muerto
@@ -1285,11 +1289,31 @@ $('btnAgain').addEventListener('click', conAudio(() => {
     else startWithKeys();
 }));
 $('btnResume').addEventListener('click', conAudio(() => togglePause(false)));
-$('btnQuit').addEventListener('click', conAudio(() => {
+
+/** Volver al menú sin más: la partida se pierde y no se guarda nada. */
+function alMenu() {
     game.paused = false;
     game.running = false;
-    showPanel('start');
+    if (duelo.activo) abandonarDuelo();
+    else { cerrarDuelo(); showPanel('start'); }
     hud.hidden = true;
+}
+
+$('btnQuit').addEventListener('click', conAudio(alMenu));
+$('btnMenuFinal').addEventListener('click', conAudio(alMenu));
+
+/**
+ * Rendirse: termina la partida AHORA y pasa por el resumen, así que el tiempo
+ * que llevabas cuenta igual que si te hubieras caído. En un duelo es distinto:
+ * ahí rendirse es abandonar, y eso no puntúa.
+ */
+$('btnRendirse').addEventListener('click', conAudio(() => {
+    if (!game.running && !game.paused) return;
+    game.paused = false;
+    if (duelo.activo) { abandonarDuelo(); hud.hidden = true; return; }
+    game.running = false;
+    hud.hidden = true;
+    finishGame();
 }));
 $('btnPause').addEventListener('click', () => togglePause());
 

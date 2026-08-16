@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css?v=16">
-    <link rel="stylesheet" href="css/juego.css?v=16">
+    <link rel="stylesheet" href="css/style.css?v=17">
+    <link rel="stylesheet" href="css/juego.css?v=17">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -184,7 +184,7 @@
                     <p class="panel-note" id="dueloNota"></p>
                     <div class="panel-actions">
                         <button class="btn-primary" id="btnOtroDuelo" type="button">Otro duelo</button>
-                        <button class="btn-secondary" id="btnDueloSalir" type="button">Volver</button>
+                        <button class="btn-secondary" id="btnDueloSalir" type="button">Menú principal</button>
                     </div>
                 </div>
 
@@ -193,8 +193,10 @@
                     <p class="panel-note">Tómate el descanso, que para eso entrenas.</p>
                     <div class="panel-actions">
                         <button class="btn-primary" id="btnResume" type="button">Seguir</button>
-                        <button class="btn-secondary" id="btnQuit" type="button">Dejarlo</button>
+                        <button class="btn-secondary" id="btnRendirse" type="button">Rendirse</button>
+                        <button class="btn-secondary" id="btnQuit" type="button">Menú principal</button>
                     </div>
+                    <p class="panel-legal" id="notaPausa">Rendirte termina la partida y guarda el tiempo que llevas.</p>
                 </div>
 
                 <div class="panel" id="panelOver" hidden>
@@ -233,6 +235,7 @@
 
                     <div class="panel-actions">
                         <button class="btn-primary" id="btnAgain" type="button">Otra vez</button>
+                        <button class="btn-secondary" id="btnMenuFinal" type="button">Menú principal</button>
                         <a class="btn-secondary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app">Descargar GymSpeak</a>
                     </div>
                 </div>
@@ -359,19 +362,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js?v=16"></script>
+    <script type="module" src="js/juego.js?v=17"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=16';
+        import { montarBoton } from '/js/cuenta.js?v=17';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=16');
+        const { montarCorredor } = await import('/js/corredor.js?v=17');
         montarCorredor('.nav-container');
 
-        const { montarMenu } = await import('/js/menu.js?v=16');
+        const { montarMenu } = await import('/js/menu.js?v=17');
         montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=16"></script>
+    <script type="module" src="js/clasificacion.js?v=17"></script>
 </body>
 </html>

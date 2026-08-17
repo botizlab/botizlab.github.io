@@ -10,7 +10,7 @@
  * tabla abierta a lectura sería descargable entera con la clave pública.
  */
 
-import { sesion } from '/js/cuenta.js?v=21';
+import { sesion } from '/js/cuenta.js?v=22';
 
 const SUPABASE_URL = 'https://datuqilcshjvapujdool.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhdHVxaWxjc2hqdmFwdWpkb29sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDgxMzIsImV4cCI6MjA5NDYyNDEzMn0.q6AZirRR1UsKKdkxvnmlmPDVQx09T-FckLl03aRh5Gw';
@@ -48,33 +48,59 @@ window.__subirMarca = async (segundos) => {
     try {
         const s = await sesion();
         if (!s) return;
-        const r = await rpc('runner_guardar_marca', { p_segundos: Math.round(segundos * 100) / 100 });
-        if (r?.[0]?.mejorada) pintarTop();
+        await rpc('runner_guardar_marca', { p_segundos: Math.round(segundos * 100) / 100 });
     } catch { /* la partida ya está guardada en local; esto es un extra */ }
 };
 
-/**
- * El marcador que sale al terminar la partida.
- *
- * Es el mismo dato que la tabla de la página, pero corto y en el momento en
- * que de verdad interesa: acabas de jugar y quieres saber dónde te deja.
- */
-window.__marcadorFinal = async () => {
-    const caja = $('marcadorFinal');
-    const cuerpo = $('marcadorCuerpo');
-    if (!caja || !cuerpo) return;
+/** Lo usa el resumen para decidir si ofrecer guardar la marca. */
+window.__hayCuenta = async () => !!(await sesion().catch(() => null));
 
-    let filas;
+// ═════════════════════ La clasificación ═════════════════════
+
+/**
+ * Pinta el podio, unos puntos suspensivos y tu vecindario.
+ *
+ * Con mucha gente un top de veinte no dice nada si vas el 253. Lo que engancha
+ * es ver quién tienes justo delante. El corte lo marca el servidor con la
+ * columna `grupo`, y los puestos salen todos del MISMO recuento: pidiéndolo en
+ * dos viajes podrían no cuadrar entre sí.
+ */
+async function pintarEn(cuerpo, cabecera, aviso, opciones = {}) {
+    const top = opciones.top ?? 3;
+    const ventana = opciones.ventana ?? 1;
+
+    let filas, total;
     try {
-        filas = await rpc('runner_top', { p_limite: 5 });
+        [filas, total] = await Promise.all([
+            rpc('runner_clasificacion', { p_top: top, p_ventana: ventana }),
+            rpc('runner_cuantos')
+        ]);
     } catch {
-        caja.hidden = true;   // sin tabla mejor no enseñar una caja vacía
-        return;
+        if (aviso) aviso.textContent = 'No se ha podido cargar la clasificación.';
+        return false;
     }
-    if (!filas.length) { caja.hidden = true; return; }
+
+    if (!filas.length) {
+        if (aviso) aviso.textContent = 'Todavía no hay marcas. Sé el primero.';
+        return false;
+    }
+    if (aviso) aviso.textContent = '';
 
     cuerpo.textContent = '';
+    let anterior = 0;
     for (const f of filas) {
+        // Si hay hueco entre un puesto y el siguiente, se dice con puntos
+        if (anterior && f.puesto > anterior + 1) {
+            const hueco = document.createElement('tr');
+            hueco.className = 'hueco';
+            const td = document.createElement('td');
+            td.colSpan = 3;
+            td.textContent = '⋯';
+            hueco.append(td);
+            cuerpo.append(hueco);
+        }
+        anterior = f.puesto;
+
         const tr = document.createElement('tr');
         if (f.soy_yo) tr.className = 'yo';
         const p = document.createElement('td');
@@ -89,111 +115,29 @@ window.__marcadorFinal = async () => {
         cuerpo.append(tr);
     }
 
-    // Tu puesto en la cabecera, aunque no salgas entre los cinco
-    const mio = $('marcadorMiPuesto');
-    mio.textContent = '';
-    const dentro = filas.find((f) => f.soy_yo);
-    if (dentro) {
-        mio.textContent = `Vas ${dentro.puesto}º`;
-    } else if (await sesion().catch(() => null)) {
-        try {
-            const r = await rpc('runner_mi_puesto');
-            if (r?.length) mio.textContent = `Vas ${r[0].puesto}º de ${r[0].total}`;
-        } catch { /* sin puesto, sin texto */ }
+    if (cabecera) {
+        const mio = filas.find((f) => f.soy_yo);
+        cabecera.total.textContent = total === 1 ? '1 jugador' : `${total} jugadores`;
+        cabecera.puesto.textContent = mio ? `Vas ${mio.puesto}º` : '';
     }
-    caja.hidden = false;
-    pintarTop();   // la de la página, por si tu marca acaba de cambiarla
+    return true;
+}
+
+/** La tabla del menú, con más vecinos porque hay sitio de sobra. */
+window.__pintarTabla = async () => {
+    await pintarEn($('tablaCuerpo'), { total: $('tablaTotal'), puesto: $('tablaMiPuesto') },
+                   $('tablaAviso'), { top: 3, ventana: 2 });
+    pintarStats();
 };
 
-/** Lo usa el resumen para decidir si ofrecer guardar la marca. */
-window.__hayCuenta = async () => !!(await sesion().catch(() => null));
-
-// ═════════════════════ Pintar la tabla ═════════════════════
-
-async function pintarTop() {
-    const cuerpo = $('topCuerpo');
-    const aviso = $('topAviso');
-    if (!cuerpo) return;
-
-    aviso.textContent = 'Cargando…';
-    let filas;
-    try {
-        filas = await rpc('runner_top', { p_limite: 20 });
-    } catch {
-        aviso.textContent = 'No se ha podido cargar la clasificación.';
-        return;
-    }
-
-    cuerpo.textContent = '';
-    if (!filas.length) {
-        aviso.textContent = 'Todavía no hay marcas. Sé el primero.';
-        // Con la tabla vacía es CUANDO más falta hace decir que entres: si se
-        // saliera aquí, quien no tiene cuenta no vería nunca la invitación
-        await pintarMiPuesto([]);
-        return;
-    }
-    aviso.textContent = '';
-
-    for (const f of filas) {
-        const tr = document.createElement('tr');
-        if (f.soy_yo) tr.className = 'yo';
-
-        const puesto = document.createElement('td');
-        puesto.className = 'puesto';
-        // Solo el número: los tres primeros ya se distinguen por estar arriba
-        puesto.textContent = f.puesto;
-        if (f.puesto <= 3) puesto.classList.add('podio');
-
-        const quien = document.createElement('td');
-        quien.className = 'quien';
-        // Se enseña el usuario, que es como se identifica la gente en la app
-        quien.textContent = f.usuario ? '@' + f.usuario : (f.nombre || 'Anónimo');
-
-        const marca = document.createElement('td');
-        marca.className = 'marca';
-        marca.textContent = tiempo(f.segundos);
-
-        const cuando = document.createElement('td');
-        cuando.className = 'cuando';
-        cuando.textContent = new Date(f.conseguido).toLocaleDateString('es-ES',
-            { day: '2-digit', month: 'short' });
-
-        tr.append(puesto, quien, marca, cuando);
-        cuerpo.append(tr);
-    }
-
-    await pintarMiPuesto(filas);
-}
-
-/** Si no sales en el top, al menos que sepas por dónde andas. */
-async function pintarMiPuesto(filas) {
-    const caja = $('miPuesto');
+/** El marcador del resumen: más corto, que ahí solo quieres el titular. */
+window.__marcadorFinal = async () => {
+    const caja = $('marcadorFinal');
     if (!caja) return;
-    caja.hidden = true;
-
-    const s = await sesion();
-    if (!s) {
-        caja.hidden = false;
-        caja.className = 'mi-puesto sin-cuenta';
-        caja.textContent = 'Entra con tu cuenta para que tu marca cuente en la tabla.';
-        return;
-    }
-    if (filas.some((f) => f.soy_yo)) return;   // ya sale arriba
-
-    try {
-        const r = await rpc('runner_mi_puesto');
-        if (!r?.length) {
-            caja.hidden = false;
-            caja.className = 'mi-puesto';
-            caja.textContent = 'Aún no tienes marca. Juega una partida y aparecerás aquí.';
-            return;
-        }
-        const { puesto, segundos, total } = r[0];
-        caja.hidden = false;
-        caja.className = 'mi-puesto';
-        caja.textContent = `Vas ${puesto}º de ${total}, con ${tiempo(segundos)}.`;
-    } catch { /* sin puesto, sin aviso */ }
-}
+    const ok = await pintarEn($('marcadorCuerpo'),
+        { total: { textContent: '' }, puesto: $('marcadorMiPuesto') }, null, { top: 3, ventana: 1 });
+    caja.hidden = !ok;
+};
 
 /** Tus números de duelo. Sin sesión no hay caja: no habría nada que contar. */
 async function pintarStats() {
@@ -217,6 +161,4 @@ async function pintarStats() {
     caja.hidden = false;
 }
 
-$('topRecargar')?.addEventListener('click', () => { pintarTop(); pintarStats(); });
-pintarTop();
-pintarStats();
+

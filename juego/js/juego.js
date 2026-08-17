@@ -80,6 +80,7 @@ const panels = {
     calib: $('panelCalib'),
     error: $('panelError'),
     login: $('panelLogin'),
+    tabla: $('panelTabla'),
     duelos: $('panelDuelos'),
     amigos: $('panelAmigos'),
     cola: $('panelCola'),
@@ -1485,6 +1486,12 @@ function conAudio(fn) {
         return fn(...args);
     };
 }
+
+$('btnTabla').addEventListener('click', conAudio(() => {
+    showPanel('tabla');
+    if (window.__pintarTabla) window.__pintarTabla();
+}));
+$('btnTablaVolver').addEventListener('click', conAudio(() => showPanel('start')));
 
 $('btnBuscarRival').addEventListener('click', conAudio(() =>
     conCamaraYLuego(() => entrarEnCola(duelo.D))));

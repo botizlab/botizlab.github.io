@@ -18,8 +18,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script>document.documentElement.classList.add("js");</script>
-    <link rel="stylesheet" href="css/style.css?v=21">
-    <link rel="stylesheet" href="css/juego.css?v=21">
+    <link rel="stylesheet" href="css/style.css?v=22">
+    <link rel="stylesheet" href="css/juego.css?v=22">
 </head>
 <body class="game-body">
     <!-- Navbar -->
@@ -31,9 +31,7 @@
             </a>
             <div class="nav-derecha">
                 <ul class="nav-links" id="navLinks">
-                    <li><a href="#clasificacion">Clasificación</a></li>
-                    <li><a href="#obstaculos">Obstáculos</a></li>
-                    <li><a href="#movimientos">Movimientos</a></li>
+                    <li><a href="#movimientos">Controles</a></li>
                     <li><a href="https://botizlab.github.io/gymspeak-web/">La app</a></li>
                     <li><a href="/" class="btn-outline">Carlos Botiz</a></li>
                 </ul>
@@ -101,6 +99,7 @@
                     <div class="panel-modos">
                         <button class="btn-primary" id="btnCam" type="button">Jugar con la cámara</button>
                         <button class="btn-secondary" id="btnKeys" type="button">Jugar con teclado</button>
+                        <button class="btn-secondary" id="btnTabla" type="button">Clasificación</button>
                         <button class="btn-secondary" id="btnDuelo" type="button">
                             1<span class="vs">vs</span>1 · Contra otra persona
                             <span class="chincheta" id="chinchetaRetos" hidden>0</span>
@@ -167,6 +166,32 @@
                     <p class="panel-note" id="colaNota">En cuanto entre alguien más, empezáis los dos a la vez y con la misma pista.</p>
                     <div class="panel-actions">
                         <button class="btn-secondary" id="btnCancelarCola" type="button">Cancelar</button>
+                    </div>
+                </div>
+
+                <!-- La clasificación vive AQUÍ, no en la página: esto es un
+                     juego, y un juego enseña sus cosas en su pantalla -->
+                <div class="panel panel-ancho" id="panelTabla" hidden>
+                    <h2>Clasificación</h2>
+                    <div class="marcador">
+                        <div class="marcador-cab">
+                            <span id="tablaTotal">—</span>
+                            <span id="tablaMiPuesto"></span>
+                        </div>
+                        <table class="marcador-tabla">
+                            <thead><tr><th>#</th><th>Jugador</th><th>Marca</th></tr></thead>
+                            <tbody id="tablaCuerpo"></tbody>
+                        </table>
+                    </div>
+                    <p class="top-aviso" id="tablaAviso"></p>
+                    <div class="mis-stats" id="misStats" hidden>
+                        <div class="stat-caja"><span class="stat-n" id="stDuelos">0</span><span class="stat-t">Duelos</span></div>
+                        <div class="stat-caja"><span class="stat-n" id="stVictorias">0</span><span class="stat-t">Victorias</span></div>
+                        <div class="stat-caja"><span class="stat-n" id="stDerrotas">0</span><span class="stat-t">Derrotas</span></div>
+                        <div class="stat-caja"><span class="stat-n" id="stRatio">—</span><span class="stat-t">Ratio</span></div>
+                    </div>
+                    <div class="panel-actions">
+                        <button class="btn-secondary" id="btnTablaVolver" type="button">Volver</button>
                     </div>
                 </div>
 
@@ -269,7 +294,7 @@
                         para que cuente en la clasificación.
                     </p>
 
-                    <div class="panel-actions">
+                    <div class="panel-actions separado">
                         <button class="btn-primary" id="btnAgain" type="button">Otra vez</button>
                         <button class="btn-secondary" id="btnMenuFinal" type="button">Menú principal</button>
                         <a class="btn-secondary" href="https://play.google.com/store/apps/details?id=com.gymspeak.app">Descargar GymSpeak</a>
@@ -280,94 +305,6 @@
 
         <!-- Qué hay en la pista -->
         <!-- Clasificación: una fila por persona, la mejor marca de cada uno -->
-        <section class="controls" id="clasificacion">
-            <h2 class="controls-title">Los que más aguantan</h2>
-            <p class="tabla-nota">Solo cuenta tu mejor marca: nadie sale dos veces. Si la superas, sube tu fila.</p>
-
-            <div class="tabla-caja">
-                <table class="tabla-top">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Jugador</th>
-                            <th scope="col">Marca</th>
-                            <th scope="col">Cuándo</th>
-                        </tr>
-                    </thead>
-                    <tbody id="topCuerpo"></tbody>
-                </table>
-            </div>
-
-            <p class="top-aviso" id="topAviso" role="status" aria-live="polite"></p>
-            <p class="mi-puesto" id="miPuesto" hidden></p>
-
-            <!-- Tus números. Solo con sesión: sin cuenta no hay nada que contar -->
-            <div class="mis-stats" id="misStats" hidden>
-                <div class="stat-caja"><span class="stat-n" id="stDuelos">0</span><span class="stat-t">Duelos</span></div>
-                <div class="stat-caja"><span class="stat-n" id="stVictorias">0</span><span class="stat-t">Victorias</span></div>
-                <div class="stat-caja"><span class="stat-n" id="stDerrotas">0</span><span class="stat-t">Derrotas</span></div>
-                <div class="stat-caja"><span class="stat-n" id="stRatio">—</span><span class="stat-t">Ratio</span></div>
-            </div>
-            <button class="btn-secondary btn-recargar" type="button" id="topRecargar">Recargar</button>
-        </section>
-
-        <section class="controls" id="obstaculos">
-            <h2 class="controls-title">Qué te vas a encontrar</h2>
-            <div class="controls-grid">
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">▬</span>
-                    <h3>Barra en el suelo</h3>
-                    <p>Tirada con sus discos. Se salta.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">⊓</span>
-                    <h3>Pórtico de dominadas</h3>
-                    <p>La barra está arriba. Te agachas y pasas por debajo.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">▮</span>
-                    <h3>Banco de press</h3>
-                    <p>Con su soporte. Ocupa el carril de lado a lado: solo se esquiva.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">◍</span>
-                    <h3>Saco de boxeo</h3>
-                    <p>Cuelga y se balancea de un carril a otro. Vete al lado libre o pasa por debajo.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">⤓</span>
-                    <h3>Prensa</h3>
-                    <p>Su barra sale del techo y <strong>cae a plomo</strong> hasta el suelo. Si la ves bajar, prepárate a saltar.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">⤒</span>
-                    <h3>Polea</h3>
-                    <p>Su barra sale del suelo y <strong>sube</strong> hasta la altura del pecho. Si la ves subir, solo se pasa por debajo.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">〰</span>
-                    <h3>La comba</h3>
-                    <p>Llega alta y <strong>baja hasta barrer el suelo</strong>, siempre. Ocupa los dos carriles, así que cambiarse no sirve: se salta y punto.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-acero">●</span>
-                    <h3>Balón medicinal</h3>
-                    <p>Viene rodando y se cambia de carril por el camino. Sáltalo o déjale sitio.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-verde">≡</span>
-                    <h3>Escalera de agilidad</h3>
-                    <p>No hace daño y no te frena. De momento es solo decorado del suelo.</p>
-                </div>
-                <div class="ctrl-card">
-                    <span class="ctrl-icon icon-verde">✦</span>
-                    <h3>Esquives al límite</h3>
-                    <p>No hay nada que recoger. Si te libras por los pelos —saltando justo, agachándote justo o cambiándote en el último momento— salta un <strong>PERFECTO</strong>. Es lo único que se premia.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Chuleta de controles -->
         <section class="controls" id="movimientos">
             <h2 class="controls-title">Los cuatro movimientos</h2>
             <div class="controls-grid">
@@ -406,19 +343,19 @@
         </div>
     </footer>
 
-    <script type="module" src="js/juego.js?v=21"></script>
+    <script type="module" src="js/juego.js?v=22"></script>
     <script type="module">
         // La misma cuenta que la web y que la app. Al estar en el mismo origen
         // la sesión ya viene compartida: no hay nada que sincronizar.
-        import { montarBoton } from '/js/cuenta.js?v=21';
+        import { montarBoton } from '/js/cuenta.js?v=22';
         montarBoton(document.getElementById('huecoCuenta'), { rutaPerfil: '/cuenta/' });
 
-        const { montarCorredor } = await import('/js/corredor.js?v=21');
+        const { montarCorredor } = await import('/js/corredor.js?v=22');
         montarCorredor('.nav-container');
 
-        const { montarMenu } = await import('/js/menu.js?v=21');
+        const { montarMenu } = await import('/js/menu.js?v=22');
         montarMenu();
     </script>
-    <script type="module" src="js/clasificacion.js?v=21"></script>
+    <script type="module" src="js/clasificacion.js?v=22"></script>
 </body>
 </html>
